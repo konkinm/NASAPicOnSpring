@@ -1,0 +1,21 @@
+telegram:
+  api-url: "https://api.telegram.org/"
+  bot-name: "NASAPic_bot"
+  bot-token: "6270759480:AAHaxqhV7R3Wa0hx2oFfX5wZJr4F2W5V9uU"
+  webhook-path: "https://38ca-178-134-101-193.ngrok-free.app"
+  bot-path: ""
+server:
+  port: "80"
+message:
+  errorText:
+    text: "Почему-то не сработало"
+
+logging:
+  level:
+    root: INFO
+    org.springframework: ERROR
+    ru.konkin.telegram.SimpleEchoBot: DEBUG
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"
+    file: "%d %p %c{1.} [%t] %m%n"
+  file: app.log
