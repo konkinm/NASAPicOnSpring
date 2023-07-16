@@ -17,8 +17,6 @@ public class TelegramConfig {
     String webhookPath;
     @Value("${telegram.bot-name}")
     String botName;
-    @Value("${telegram.bot-token}")
-    String botToken;
     @Value("${message.errorText.text}")
     String errorText;
 }

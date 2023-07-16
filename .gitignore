@@ -6,4 +6,4 @@
 
 target/
 log/
-out/
+/ngrok.bat

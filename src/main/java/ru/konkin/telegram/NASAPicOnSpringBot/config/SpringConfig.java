@@ -34,7 +34,7 @@ public class SpringConfig {
 
         bot.setBotPath(telegramConfig.getBotPath());
         bot.setBotUsername(telegramConfig.getBotName());
-        bot.setBotToken(telegramConfig.getBotToken());
+        bot.setBotToken(System.getenv("BOT_TOKEN"));
         bot.setWebhook(setWebhook);
 
         bot.setErrorText(telegramConfig.getErrorText());
