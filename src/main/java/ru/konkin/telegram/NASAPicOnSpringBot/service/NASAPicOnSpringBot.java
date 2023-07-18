@@ -34,7 +34,6 @@ import ru.konkin.telegram.NASAPicOnSpringBot.model.NasaObject;
 public class NASAPicOnSpringBot extends SpringWebhookBot {
     String botPath;
     String botUsername;
-    String botToken;
     String errorText;
     public static long chat_id;
 
@@ -43,9 +42,10 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
             "Напоминаю, что картинки на сайте NASA обновляются раз в сутки";
     private boolean DATE_MODE = false;
 
-    public NASAPicOnSpringBot(SetWebhook setWebhook) {
-        super(setWebhook);
+    public NASAPicOnSpringBot(SetWebhook setWebhook, String botToken) {
+        super(setWebhook, botToken);
     }
+
 
     public void createCommands() {
         List<BotCommand> listOfCommands = new ArrayList<>();

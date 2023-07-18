@@ -29,12 +29,16 @@ public class SpringConfig {
     }
 
     @Bean
-    public NASAPicOnSpringBot springWebhookBot(SetWebhook setWebhook) throws TelegramApiException {
-        NASAPicOnSpringBot bot = new NASAPicOnSpringBot(setWebhook);
+    public String getBotToken() {
+        return System.getenv("BOT_TOKEN");
+    }
+
+    @Bean
+    public NASAPicOnSpringBot springWebhookBot(SetWebhook setWebhook, String botToken) throws TelegramApiException {
+        NASAPicOnSpringBot bot = new NASAPicOnSpringBot(setWebhook, botToken);
 
         bot.setBotPath(telegramConfig.getBotPath());
         bot.setBotUsername(telegramConfig.getBotName());
-        bot.setBotToken(System.getenv("BOT_TOKEN"));
         bot.setWebhook(setWebhook);
 
         bot.setErrorText(telegramConfig.getErrorText());
