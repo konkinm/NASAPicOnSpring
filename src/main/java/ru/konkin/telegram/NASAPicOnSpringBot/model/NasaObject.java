@@ -1,4 +1,4 @@
-package ru.konkin.telegram.NASAPicOnSpringBot.service;
+package ru.konkin.telegram.NASAPicOnSpringBot.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

@@ -23,7 +23,7 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import ru.konkin.telegram.NASAPicOnSpringBot.service.NasaObject;
+import ru.konkin.telegram.NASAPicOnSpringBot.model.NasaObject;
 
 
 @Getter
