@@ -1,4 +1,4 @@
-package ru.konkin.telegram.NASAPicOnSpringBot.service;
+package ru.konkin.telegram.NASAPicOnSpringBot.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.client.config.RequestConfig;
@@ -12,7 +12,7 @@ import ru.konkin.telegram.NASAPicOnSpringBot.config.NasaAPIConfig;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-public class Utils {
+public class NasaApiClient {
 
     private static final CloseableHttpClient httpClient = HttpClientBuilder.create()
             .setDefaultRequestConfig(RequestConfig.custom()
@@ -24,7 +24,7 @@ public class Utils {
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    public static String makeRequest(String param) {
+    public static String makeNasaApiRequest(String param) {
         return NasaAPIConfig.API_BASE_URI + param;
     }
 

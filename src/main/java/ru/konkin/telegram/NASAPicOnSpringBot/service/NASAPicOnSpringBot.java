@@ -23,6 +23,7 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ru.konkin.telegram.NASAPicOnSpringBot.client.NasaApiClient;
 import ru.konkin.telegram.NASAPicOnSpringBot.model.NasaObject;
 
 
@@ -76,7 +77,7 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
                         String date = matcher.group(0);
                         if (!Objects.equals(date, "")) {
                             try {
-                                nasaObject = Utils.getNASAObject(Utils.makeRequest("?date=" + date));
+                                nasaObject = NasaApiClient.getNASAObject(NasaApiClient.makeNasaApiRequest("?date=" + date));
                             } catch (IOException e) {
                                 log.error(e.getMessage());
                                 throw new RuntimeException(e);
@@ -119,7 +120,7 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
     private void giveRandomPicture() {
         NasaObject nasaObject;
         try {
-            nasaObject = Utils.getNASAObjects(Utils.makeRequest("?count=1"))[0];
+            nasaObject = NasaApiClient.getNASAObjects(NasaApiClient.makeNasaApiRequest("?count=1"))[0];
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -129,7 +130,7 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
     private void giveTodayPicture() {
         NasaObject nasaObject;
         try {
-            nasaObject = Utils.getNASAObject(Utils.makeRequest(""));
+            nasaObject = NasaApiClient.getNASAObject(NasaApiClient.makeNasaApiRequest(""));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
