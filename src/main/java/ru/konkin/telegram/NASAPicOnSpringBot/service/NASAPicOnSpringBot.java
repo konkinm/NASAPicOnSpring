@@ -25,7 +25,6 @@ import ru.konkin.telegram.NASAPicOnSpringBot.model.NasaObject;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Slf4j
 public class NASAPicOnSpringBot extends SpringWebhookBot {
     String botPath;
     String botUsername;
@@ -60,14 +59,14 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
                             try {
                                 nasaObject = NasaApiClient.getNASAObject(NasaApiClient.makeNasaApiRequest("?date=" + date));
                             } catch (IOException e) {
-                                log.error(e.getMessage());
+                                System.out.println(e.getMessage());
                                 throw new RuntimeException(e);
                             }
                             sendFormattedPost(nasaObject);
                             date = "";
                             DATE_MODE = false;
                         } else {
-                            log.error("Parsing error!");
+                            System.out.println("Parsing error!");
                             throw new RuntimeException("Parsing error!");
                         }
                     } else {
@@ -85,7 +84,7 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
                         default -> sendMessage("Я не понимаю :(");
                     }
                 }
-                log.info("handling update ID:" + update.getUpdateId());
+                //log.info("handling update ID:" + update.getUpdateId());
             }
         }
     }
@@ -141,7 +140,7 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
         } catch (Exception e) {
             chat_id = update.getMessage().getChatId();
             sendMessage(this.errorText);
-            log.error(e.getMessage());
+            System.out.println(e.getMessage());
         }
         return null;
     }
@@ -153,9 +152,9 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
         message.enableHtml(true);
         try {
             execute(message);
-            log.info(String.format("Message sent: \"%s\"", messageText));
+            //log.info(String.format("Message sent: \"%s\"", messageText));
         } catch (TelegramApiException e) {
-            log.error(e.getMessage());
+            System.out.println(e.getMessage());
         }
     }
 }
