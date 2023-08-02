@@ -4,7 +4,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updates.SetWebhook;
@@ -12,14 +11,13 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.starter.SpringWebhookBot;
+import ru.konkin.telegram.NASAPicOnSpringBot.client.NasaApiClient;
+import ru.konkin.telegram.NASAPicOnSpringBot.model.NasaObject;
 
 import java.io.IOException;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import ru.konkin.telegram.NASAPicOnSpringBot.client.NasaApiClient;
-import ru.konkin.telegram.NASAPicOnSpringBot.model.NasaObject;
 
 
 @Getter
