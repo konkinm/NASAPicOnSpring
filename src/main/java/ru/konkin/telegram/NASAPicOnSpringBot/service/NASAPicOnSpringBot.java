@@ -75,22 +75,14 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
                     }
                 } else {
                     switch (text) {
-                        case "/start":
-                        case "/help":
-                            sendMessage(HELP_TEXT);
-                            break;
-                        case "/give":
-                            giveTodayPicture();
-                            break;
-                        case "/random":
-                            giveRandomPicture();
-                            break;
-                        case "/date":
+                        case "/start", "/help" -> sendMessage(HELP_TEXT);
+                        case "/give" -> giveTodayPicture();
+                        case "/random" -> giveRandomPicture();
+                        case "/date" -> {
                             sendMessage("Введите дату в формате YYYY-MM-DD, но не раньше 1995-06-20:");
                             DATE_MODE = true;
-                            break;
-                        default:
-                            sendMessage("Я не понимаю :(");
+                        }
+                        default -> sendMessage("Я не понимаю :(");
                     }
                 }
                 log.info("handling update ID:" + update.getUpdateId());
