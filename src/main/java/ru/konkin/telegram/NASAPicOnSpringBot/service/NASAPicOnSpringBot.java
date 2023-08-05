@@ -6,19 +6,14 @@ import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
-import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updates.SetWebhook;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
-import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.starter.SpringWebhookBot;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -46,20 +41,6 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
         super(setWebhook, botToken);
     }
 
-
-    public void createCommands() {
-        List<BotCommand> listOfCommands = new ArrayList<>();
-        listOfCommands.add(new BotCommand("/start","Получить описание"));
-        listOfCommands.add(new BotCommand("/help","Получить описание"));
-        listOfCommands.add(new BotCommand("/give","Скинуть сегодняшнюю картинку"));
-        listOfCommands.add(new BotCommand("/random","Скинуть случайную картинку"));
-        listOfCommands.add(new BotCommand("/date","Перейти в режим ввода даты"));
-        try {
-            this.execute(new SetMyCommands(listOfCommands, new BotCommandScopeDefault(), null));
-        } catch (TelegramApiException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     private void handleUpdate(Update update) {
         NasaObject nasaObject;
