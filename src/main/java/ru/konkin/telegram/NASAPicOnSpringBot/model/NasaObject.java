@@ -73,7 +73,7 @@ public class NasaObject {
 
     @Override
     public String toString() {
-        return "ru.konkin.service.NasaObject{" +
+        return "NasaObject{" +
                 "credit='" + credit + '\'' +
                 ", copyright='" + copyright + '\'' +
                 ", date='" + date + '\'' +
