@@ -66,7 +66,7 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
                                 System.out.println(e.getMessage());
                                 throw new RuntimeException(e);
                             }
-                            sendFormattedPostWithDate(nasaObject);
+                            sendFormattedAndTranslatedPostWithDate(nasaObject);
                         } else {
                             System.out.println("Parsing error!");
                             throw new RuntimeException("Parsing error!");
@@ -90,65 +90,20 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
-        String title = nasaObject.getTitle();
-        String explanation = nasaObject.getExplanation();
-        List<String> translatedTexts = YandexTranslateApiClient
-                .translate(new ArrayList<>(Arrays.asList(title,explanation)));
-        String translatedTitle = translatedTexts.get(0);
-        String translatedExplanation = translatedTexts.get(1);
-        sendFormattedPostWithDateAndCustomTitleAndExplanation(nasaObject, translatedTitle, translatedExplanation);
+        sendFormattedAndTranslatedPostWithDate(nasaObject);
     }
 
 
-
-
-    private void giveTodayPicture() {
+    private void giveTodayPicture() throws IOException {
         NasaObject nasaObject;
         try {
             nasaObject = NasaApiClient.getNASAObject(NasaApiClient.makeNasaApiRequest(""));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        sendFormattedPost(nasaObject);
+        sendFormattedAndTranslatedPostWithDate(nasaObject);
     }
 
-    private void sendFormattedPost(NasaObject nasaObject) {
-        sendMessage("<a href=\""
-                + nasaObject.getUrl()
-                + "\" >"
-                + "<b>"
-                + nasaObject.getTitle()
-                + "</b>"
-                + "</a>"
-                + "\n\n"
-                + nasaObject.getExplanation());
-    }
-
-    private void sendFormattedPostWithDate(NasaObject nasaObject) {
-        sendMessage("<a href=\""
-                + nasaObject.getUrl()
-                + "\" >"
-                + "<b>"
-                + nasaObject.getTitle()
-                + "</b>"
-                + "</a>"
-                + "\n(Posted on " + nasaObject.getDate() + ")\n\n"
-                + nasaObject.getExplanation());
-    }
-
-    private void sendFormattedPostWithDateAndCustomTitleAndExplanation(NasaObject nasaObject,
-                                                                       String customTitle,
-                                                                       String customExplanation) {
-        sendMessage("<a href=\""
-                + nasaObject.getUrl()
-                + "\" >"
-                + "<b>"
-                + customTitle
-                + "</b>"
-                + "</a>"
-                + "\n(Posted on " + nasaObject.getDate() + ")\n\n"
-                + customExplanation);
-    }
 
     @Override
     public BotApiMethod<?> onWebhookUpdateReceived(Update update) {
@@ -160,6 +115,24 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
             System.out.println(e.getMessage());
         }
         return null;
+    }
+
+    private void sendFormattedAndTranslatedPostWithDate(NasaObject nasaObject) throws IOException {
+        String title = nasaObject.getTitle();
+        String explanation = nasaObject.getExplanation();
+        List<String> translatedTexts = YandexTranslateApiClient
+                .translate(new ArrayList<>(Arrays.asList(title,explanation)));
+        String translatedTitle = translatedTexts.get(0);
+        String translatedExplanation = translatedTexts.get(1);
+        sendMessage("<a href=\""
+                + nasaObject.getUrl()
+                + "\" >"
+                + "<b>"
+                + translatedTitle
+                + "</b>"
+                + "</a>"
+                + "\n(Опубликовано " + nasaObject.getDate() + ")\n\n"
+                + translatedExplanation);
     }
 
     private void sendMessage(String messageText) {
