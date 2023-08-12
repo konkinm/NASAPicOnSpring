@@ -47,7 +47,6 @@ public class SpringConfig {
         listOfCommands.add(new BotCommand("/help","Получить описание"));
         listOfCommands.add(new BotCommand("/give","Скинуть сегодняшнюю картинку"));
         listOfCommands.add(new BotCommand("/random","Скинуть случайную картинку"));
-        listOfCommands.add(new BotCommand("/date","Перейти в режим ввода даты"));
         bot.execute(new SetMyCommands(listOfCommands, new BotCommandScopeDefault(), null));
 
         return bot;

@@ -29,10 +29,13 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
     String errorText;
     public static long chat_id;
 
-    public static final String HELP_TEXT = "Привет, я бот NASA! Я высылаю ссылки на картинки по запросу. Введи команду " +
-            "/give чтобы получить сегодняшнюю картинку.\n" +
-            "Напоминаю, что картинки на сайте NASA обновляются раз в сутки";
-    private boolean DATE_MODE = false;
+    public static final String HELP_TEXT = """
+            Привет, я бот NASA! Я высылаю ссылки на картинки (или видео) с описанием по запросу. Введи команду:
+            /give чтобы получить сегодняшнюю картинку;
+            /random чтобы получить случайную картинку.
+            Либо введи дату в формате YYYY-MM-DD и я пришлю ссылку на картинку с описанием, опубликованную в тот день.
+            !Дата должна быть не раньше 1995-06-20!
+            Напоминаю, что картинки на сайте NASA обновляются раз в сутки""";
 
     public NASAPicOnSpringBot(SetWebhook setWebhook, String botToken) {
         super(setWebhook, botToken);
@@ -46,12 +49,11 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
                 Message message = update.getMessage();
                 chat_id = message.getChatId();
                 String text = message.getText();
-                if (DATE_MODE) {
-                    final String regex = "\\d{4}-\\d{2}-\\d{2}";
-                    final Pattern pattern = Pattern.compile(regex);
-                    assert text != null;
-                    final Matcher matcher = pattern.matcher(text);
-                    if (matcher.find()) {
+                final String regex = "\\d{4}-\\d{2}-\\d{2}";
+                final Pattern pattern = Pattern.compile(regex);
+                assert text != null;
+                final Matcher matcher = pattern.matcher(text);
+                if (matcher.find()) {
                         String date = matcher.group(0);
                         if (!Objects.equals(date, "")) {
                             try {
@@ -60,29 +62,19 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
                                 System.out.println(e.getMessage());
                                 throw new RuntimeException(e);
                             }
-                            sendFormattedPost(nasaObject);
-                            date = "";
-                            DATE_MODE = false;
+                            sendFormattedPostWithDate(nasaObject);
                         } else {
                             System.out.println("Parsing error!");
                             throw new RuntimeException("Parsing error!");
                         }
                     } else {
-                        sendMessage("Введена неправильная дата. Введите дату в формате YYYY-MM-DD");
-                    }
-                } else {
                     switch (text) {
                         case "/start", "/help" -> sendMessage(HELP_TEXT);
                         case "/give" -> giveTodayPicture();
                         case "/random" -> giveRandomPicture();
-                        case "/date" -> {
-                            sendMessage("Введите дату в формате YYYY-MM-DD, но не раньше 1995-06-20:");
-                            DATE_MODE = true;
-                        }
                         default -> sendMessage("Я не понимаю :(");
                     }
                 }
-                //log.info("handling update ID:" + update.getUpdateId());
             }
         }
     }
@@ -150,7 +142,6 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
         message.enableHtml(true);
         try {
             execute(message);
-            //log.info(String.format("Message sent: \"%s\"", messageText));
         } catch (TelegramApiException e) {
             System.out.println(e.getMessage());
         }
