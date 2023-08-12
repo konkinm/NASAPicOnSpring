@@ -7,3 +7,4 @@
 target/
 log/
 /ngrok.bat
+/before_deploy.txt
