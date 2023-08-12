@@ -12,9 +12,13 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.starter.SpringWebhookBot;
 import ru.konkin.telegram.NASAPicOnSpringBot.client.NasaApiClient;
+import ru.konkin.telegram.NASAPicOnSpringBot.client.YandexTranslateApiClient;
 import ru.konkin.telegram.NASAPicOnSpringBot.model.NasaObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -42,7 +46,7 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
     }
 
 
-    private void handleUpdate(Update update) {
+    private void handleUpdate(Update update) throws IOException {
         NasaObject nasaObject;
         if (!update.hasCallbackQuery()) {
             if (update.hasMessage()) {
@@ -79,15 +83,24 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
         }
     }
 
-    private void giveRandomPicture() {
+    private void giveRandomPicture() throws IOException {
         NasaObject nasaObject;
         try {
             nasaObject = NasaApiClient.getNASAObjects(NasaApiClient.makeNasaApiRequest("?count=1"))[0];
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
-        sendFormattedPostWithDate(nasaObject);
+        String title = nasaObject.getTitle();
+        String explanation = nasaObject.getExplanation();
+        List<String> translatedTexts = YandexTranslateApiClient
+                .translate(new ArrayList<>(Arrays.asList(title,explanation)));
+        String translatedTitle = translatedTexts.get(0);
+        String translatedExplanation = translatedTexts.get(1);
+        sendFormattedPostWithDateAndCustomTitleAndExplanation(nasaObject, translatedTitle, translatedExplanation);
     }
+
+
+
 
     private void giveTodayPicture() {
         NasaObject nasaObject;
@@ -121,6 +134,20 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
                 + "</a>"
                 + "\n(Posted on " + nasaObject.getDate() + ")\n\n"
                 + nasaObject.getExplanation());
+    }
+
+    private void sendFormattedPostWithDateAndCustomTitleAndExplanation(NasaObject nasaObject,
+                                                                       String customTitle,
+                                                                       String customExplanation) {
+        sendMessage("<a href=\""
+                + nasaObject.getUrl()
+                + "\" >"
+                + "<b>"
+                + customTitle
+                + "</b>"
+                + "</a>"
+                + "\n(Posted on " + nasaObject.getDate() + ")\n\n"
+                + customExplanation);
     }
 
     @Override
