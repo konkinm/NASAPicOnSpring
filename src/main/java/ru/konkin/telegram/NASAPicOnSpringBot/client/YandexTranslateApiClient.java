@@ -11,7 +11,6 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import ru.konkin.telegram.NASAPicOnSpringBot.config.YandexTranslateApiConfig;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class YandexTranslateApiClient {
@@ -57,12 +56,7 @@ public class YandexTranslateApiClient {
 
         JsonNode jsonNode = mapper.readTree(response.getEntity().getContent());
         List<JsonNode> textNodes = jsonNode.findValues("text");
-        List<String> texts = new ArrayList<>();
 
-        for (JsonNode node : textNodes) {
-            texts.add(node.textValue());
-        }
-
-        return texts;
+        return textNodes.stream().map(JsonNode::textValue).toList();
     }
 }
