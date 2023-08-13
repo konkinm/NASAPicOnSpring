@@ -123,7 +123,10 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
         List<String> translatedTexts = YandexTranslateApiClient
                 .translate(new ArrayList<>(Arrays.asList(title,explanation)));
         String translatedTitle = translatedTexts.get(0);
-        String translatedExplanation = translatedTexts.get(1);
+        String translatedExplanation = "";
+        if (translatedTexts.size() > 1) {
+            translatedExplanation = translatedTexts.get(1);
+        }
         sendMessage("<a href=\""
                 + nasaObject.getUrl()
                 + "\" >"
