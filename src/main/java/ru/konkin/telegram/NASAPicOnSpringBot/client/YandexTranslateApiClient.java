@@ -2,27 +2,17 @@ package ru.konkin.telegram.NASAPicOnSpringBot.client;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
 import ru.konkin.telegram.NASAPicOnSpringBot.config.YandexTranslateApiConfig;
 
 import java.io.IOException;
 import java.util.List;
 
 public class YandexTranslateApiClient {
-
-    private static final CloseableHttpClient httpClient = HttpClientBuilder.create()
-            .setDefaultRequestConfig(RequestConfig.custom()
-                    .setConnectTimeout(5000)
-                    .setSocketTimeout(30000)
-                    .setRedirectsEnabled(false)
-                    .build())
-            .build();
-
     private static final ObjectMapper mapper = new ObjectMapper();
 
     public static List<String> translate(List<String> inputTexts) throws IOException {
@@ -45,17 +35,13 @@ public class YandexTranslateApiClient {
 
         final StringEntity entity = new StringEntity(json);
         httpPost.setEntity(entity);
-
-        CloseableHttpResponse response = null;
-        try {
-            response = httpClient.execute(httpPost);
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
+        List<JsonNode> textNodes;
+        try (CloseableHttpClient client = HttpClients.createDefault();
+             CloseableHttpResponse response = client
+                     .execute(httpPost)) {
+            JsonNode jsonNode = mapper.readTree(response.getEntity().getContent());
+             textNodes = jsonNode.findValues("text");
         }
-        assert response != null;
-
-        JsonNode jsonNode = mapper.readTree(response.getEntity().getContent());
-        List<JsonNode> textNodes = jsonNode.findValues("text");
 
         return textNodes.stream().map(JsonNode::textValue).toList();
     }
