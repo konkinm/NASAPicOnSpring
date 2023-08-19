@@ -116,7 +116,6 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
             handleUpdate(update);
         } catch (Exception e) {
             chat_id = update.getMessage().getChatId();
-            sendMessage(this.errorText);
             System.err.println(e.getMessage());
         }
         return null;
