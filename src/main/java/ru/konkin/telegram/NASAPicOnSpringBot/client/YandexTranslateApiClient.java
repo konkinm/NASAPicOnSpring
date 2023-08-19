@@ -20,16 +20,17 @@ public class YandexTranslateApiClient {
         httpPost.setHeader("Content-type", "application/json");
         httpPost.setHeader("Authorization", YandexTranslateApiConfig.API_TOKEN);
 
-        StringBuilder stringBuilder = new StringBuilder();
+        StringBuilder commaSeparatedTexts = new StringBuilder();
         for (String inputText : inputTexts) {
-            stringBuilder.append("\"");
-            stringBuilder.append(inputText);
-            stringBuilder.append("\",");
+            String filteredInputText = inputText.replace("\"","\\\"");
+            commaSeparatedTexts.append("\"");
+            commaSeparatedTexts.append(filteredInputText);
+            commaSeparatedTexts.append("\",");
         }
 
         final String json = "{\n" +
                 "    \"folderId\": \"" + YandexTranslateApiConfig.FOLDER_ID + "\",\n" +
-                "    \"texts\": [" + stringBuilder + "],\n" +
+                "    \"texts\": [" + commaSeparatedTexts + "],\n" +
                 "    \"targetLanguageCode\": \"ru\"\n" +
                 "}";
 
@@ -37,10 +38,9 @@ public class YandexTranslateApiClient {
         httpPost.setEntity(entity);
         List<JsonNode> textNodes;
         try (CloseableHttpClient client = HttpClients.createDefault();
-             CloseableHttpResponse response = client
-                     .execute(httpPost)) {
+             CloseableHttpResponse response = client.execute(httpPost)) {
             JsonNode jsonNode = mapper.readTree(response.getEntity().getContent());
-             textNodes = jsonNode.findValues("text");
+            textNodes = jsonNode.findValues("text");
         }
 
         return textNodes.stream().map(JsonNode::textValue).toList();
