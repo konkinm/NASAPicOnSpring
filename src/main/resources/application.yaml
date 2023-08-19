@@ -7,7 +7,7 @@ server:
   port: "80"
 message:
   errorText:
-    text: "Почему-то не сработало"
+    text: "Почему-то не сработало."
 
 logging:
   level:
