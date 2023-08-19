@@ -47,7 +47,6 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
 
 
     private void handleUpdate(Update update) throws IOException {
-        NasaObject nasaObject;
         if (!update.hasCallbackQuery()) {
             if (update.hasMessage()) {
                 Message message = update.getMessage();
@@ -60,16 +59,9 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
                 if (matcher.find()) {
                         String date = matcher.group(0);
                         if (!Objects.equals(date, "")) {
-                            try {
-                                nasaObject = NasaApiClient.getNASAObject(NasaApiClient.makeNasaApiRequest("?date=" + date));
-                            } catch (IOException e) {
-                                System.out.println(e.getMessage());
-                                throw new RuntimeException(e);
-                            }
-                            sendFormattedAndTranslatedPostWithDate(nasaObject);
+                            givePostedOnDatePicture(date);
                         } else {
-                            System.out.println("Parsing error!");
-                            throw new RuntimeException("Parsing error!");
+                            System.err.println("Parsing error!");
                         }
                     } else {
                     switch (text) {
@@ -84,26 +76,39 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
     }
 
     private void giveRandomPicture() throws IOException {
-        NasaObject nasaObject;
+        NasaObject nasaObject = null;
         try {
             nasaObject = NasaApiClient.getNASAObjects(NasaApiClient.makeNasaApiRequest("?count=1"))[0];
         } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
+            System.err.println(e.getMessage());
         }
+        assert nasaObject != null;
         sendFormattedAndTranslatedPostWithDate(nasaObject);
     }
 
 
     private void giveTodayPicture() throws IOException {
-        NasaObject nasaObject;
+        NasaObject nasaObject = null;
         try {
             nasaObject = NasaApiClient.getNASAObject(NasaApiClient.makeNasaApiRequest(""));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.err.println(e.getMessage());
         }
+        assert nasaObject != null;
         sendFormattedAndTranslatedPostWithDate(nasaObject);
     }
 
+    private void givePostedOnDatePicture(String date) throws IOException {
+        NasaObject nasaObject = null;
+        try {
+            nasaObject = NasaApiClient.getNASAObject(NasaApiClient.makeNasaApiRequest("?date=" + date));
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+            sendMessage("Нет картинки на эту дату.");
+        }
+        assert nasaObject != null;
+        sendFormattedAndTranslatedPostWithDate(nasaObject);
+    }
 
     @Override
     public BotApiMethod<?> onWebhookUpdateReceived(Update update) {
@@ -112,7 +117,7 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
         } catch (Exception e) {
             chat_id = update.getMessage().getChatId();
             sendMessage(this.errorText);
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
         }
         return null;
     }
@@ -122,10 +127,17 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
         String explanation = nasaObject.getExplanation();
         List<String> translatedTexts = YandexTranslateApiClient
                 .translate(new ArrayList<>(Arrays.asList(title,explanation)));
-        String translatedTitle = translatedTexts.get(0);
+        String translatedTitle = "";
+        if (translatedTexts.size() > 0) {
+            translatedTitle = translatedTexts.get(0);
+        } else {
+            System.err.println("'transletedTexts' is empty!");
+        }
         String translatedExplanation = "";
         if (translatedTexts.size() > 1) {
             translatedExplanation = translatedTexts.get(1);
+        } else {
+            System.out.println("WARN: 'transletedTexts' has only one element!");
         }
         sendMessage("<a href=\""
                 + nasaObject.getUrl()
@@ -145,8 +157,9 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
         message.enableHtml(true);
         try {
             execute(message);
+            System.out.printf("Message to chat_id %s sent successfully.\n", chat_id);
         } catch (TelegramApiException e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
         }
     }
 }
