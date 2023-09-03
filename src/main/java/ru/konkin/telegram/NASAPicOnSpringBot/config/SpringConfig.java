@@ -14,6 +14,8 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import java.util.ArrayList;
 import java.util.List;
 
+import ru.konkin.telegram.NASAPicOnSpringBot.model.UserObject;
+import ru.konkin.telegram.NASAPicOnSpringBot.repo.UserRepo;
 import ru.konkin.telegram.NASAPicOnSpringBot.service.NASAPicOnSpringBot;
 
 @Configuration
@@ -22,6 +24,11 @@ public class SpringConfig {
     private final TelegramConfig telegramConfig;
 
     private List<BotCommand> listOfCommands = new ArrayList<>();
+
+    @Bean
+    public UserRepo userRepo(List<UserObject> users){
+     return new UserRepo(users);
+    }
 
     @Bean
     public SetWebhook setWebhook() {

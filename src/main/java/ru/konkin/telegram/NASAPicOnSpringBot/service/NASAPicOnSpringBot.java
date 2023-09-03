@@ -65,17 +65,17 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
                         }
                     } else {
                     switch (text) {
-                        case "/start", "/help" -> sendMessage(HELP_TEXT);
-                        case "/give" -> giveTodayPicture();
-                        case "/random" -> giveRandomPicture();
-                        default -> sendMessage("Я не понимаю :(");
+                        case "/start", "/help" -> sendMessage(HELP_TEXT,chat_id);
+                        case "/give" -> giveTodayPicture(chat_id);
+                        case "/random" -> giveRandomPicture(chat_id);
+                        default -> sendMessage("Команда не поддерживается",chat_id);
                     }
                 }
             }
         }
     }
 
-    private void giveRandomPicture() throws IOException {
+    private void giveRandomPicture(long chat_id) throws IOException {
         NasaObject nasaObject = null;
         try {
             nasaObject = NasaApiClient.getNASAObjects(NasaApiClient.makeNasaApiRequest("?count=1"))[0];
@@ -83,11 +83,11 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
             System.err.println(e.getMessage());
         }
         assert nasaObject != null;
-        sendFormattedAndTranslatedPostWithDate(nasaObject);
+        sendFormattedAndTranslatedPostWithDate(nasaObject,chat_id);
     }
 
 
-    private void giveTodayPicture() throws IOException {
+    public void giveTodayPicture(long chat_id) throws IOException {
         NasaObject nasaObject = null;
         try {
             nasaObject = NasaApiClient.getNASAObject(NasaApiClient.makeNasaApiRequest(""));
@@ -95,7 +95,7 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
             System.err.println(e.getMessage());
         }
         assert nasaObject != null;
-        sendFormattedAndTranslatedPostWithDate(nasaObject);
+        sendFormattedAndTranslatedPostWithDate(nasaObject,chat_id);
     }
 
     private void givePostedOnDatePicture(String date) throws IOException {
@@ -104,10 +104,10 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
             nasaObject = NasaApiClient.getNASAObject(NasaApiClient.makeNasaApiRequest("?date=" + date));
         } catch (IOException e) {
             System.err.println(e.getMessage());
-            sendMessage("Нет картинки на эту дату.");
+            sendMessage("Нет картинки на эту дату.",chat_id);
         }
         assert nasaObject != null;
-        sendFormattedAndTranslatedPostWithDate(nasaObject);
+        sendFormattedAndTranslatedPostWithDate(nasaObject,chat_id);
     }
 
     @Override
@@ -121,13 +121,13 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
         return null;
     }
 
-    private void sendFormattedAndTranslatedPostWithDate(NasaObject nasaObject) throws IOException {
+    private void sendFormattedAndTranslatedPostWithDate(NasaObject nasaObject, long chat_id) throws IOException {
         String title = nasaObject.getTitle();
         String explanation = nasaObject.getExplanation();
         List<String> translatedTexts = YandexTranslateApiClient
                 .translate(new ArrayList<>(Arrays.asList(title,explanation)));
         String translatedTitle = "";
-        if (translatedTexts.size() > 0) {
+        if (!translatedTexts.isEmpty()) {
             translatedTitle = translatedTexts.get(0);
         } else {
             System.err.println("'transletedTexts' is empty!");
@@ -146,10 +146,11 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
                 + "</b>"
                 + "</a>"
                 + "\n(Опубликовано " + nasaObject.getDate() + ")\n\n"
-                + translatedExplanation);
+                + translatedExplanation,
+                chat_id);
     }
 
-    private void sendMessage(String messageText) {
+    private void sendMessage(String messageText, long chat_id) {
         SendMessage message = new SendMessage();
         message.setChatId(chat_id);
         message.setText(messageText);
