@@ -10,6 +10,7 @@ import org.apache.http.impl.client.HttpClients;
 import ru.konkin.telegram.NASAPicOnSpringBot.config.YandexTranslateApiConfig;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 public class YandexTranslateApiClient {
@@ -20,6 +21,19 @@ public class YandexTranslateApiClient {
         httpPost.setHeader("Content-type", "application/json");
         httpPost.setHeader("Authorization", YandexTranslateApiConfig.API_TOKEN);
 
+        final StringEntity entity = getStringEntity(inputTexts);
+        httpPost.setEntity(entity);
+        List<JsonNode> textNodes;
+        try (CloseableHttpClient client = HttpClients.createDefault();
+             CloseableHttpResponse response = client.execute(httpPost)) {
+            JsonNode jsonNode = mapper.readTree(response.getEntity().getContent());
+            textNodes = jsonNode.findValues("text");
+        }
+
+        return textNodes.stream().map(JsonNode::textValue).toList();
+    }
+
+    private static StringEntity getStringEntity(List<String> inputTexts) throws UnsupportedEncodingException {
         StringBuilder commaSeparatedTexts = new StringBuilder();
         for (String inputText : inputTexts) {
             String filteredInputText = inputText.replace("\"","\\\"");
@@ -34,15 +48,6 @@ public class YandexTranslateApiClient {
                 "    \"targetLanguageCode\": \"ru\"\n" +
                 "}";
 
-        final StringEntity entity = new StringEntity(json);
-        httpPost.setEntity(entity);
-        List<JsonNode> textNodes;
-        try (CloseableHttpClient client = HttpClients.createDefault();
-             CloseableHttpResponse response = client.execute(httpPost)) {
-            JsonNode jsonNode = mapper.readTree(response.getEntity().getContent());
-            textNodes = jsonNode.findValues("text");
-        }
-
-        return textNodes.stream().map(JsonNode::textValue).toList();
+        return new StringEntity(json);
     }
 }
