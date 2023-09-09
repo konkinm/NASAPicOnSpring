@@ -49,6 +49,7 @@ public class SpringConfig {
         bot.setWebhook(setWebhook);
 
         bot.setErrorText(telegramConfig.getErrorText());
+        bot.setWithTranslate(telegramConfig.getWithTranslate());
 
         listOfCommands.add(new BotCommand("/start","Получить описание"));
         listOfCommands.add(new BotCommand("/help","Получить описание"));

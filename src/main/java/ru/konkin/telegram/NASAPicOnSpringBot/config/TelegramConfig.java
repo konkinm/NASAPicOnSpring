@@ -19,4 +19,6 @@ public class TelegramConfig {
     String botName;
     @Value("${message.errorText.text}")
     String errorText;
+    @Value("${translate}")
+    Boolean withTranslate;
 }

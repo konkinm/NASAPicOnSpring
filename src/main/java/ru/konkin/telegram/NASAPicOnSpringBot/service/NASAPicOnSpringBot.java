@@ -31,6 +31,7 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
     String botPath;
     String botUsername;
     String errorText;
+    Boolean withTranslate;
     public static long chat_id;
 
     public static final String HELP_TEXT = """
@@ -83,7 +84,10 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
             System.err.println(e.getMessage());
         }
         assert nasaObject != null;
-        sendFormattedAndTranslatedPostWithDate(nasaObject,chat_id);
+        if (withTranslate) {
+            sendFormattedAndTranslatedPostWithDate(nasaObject, chat_id);
+        } else { sendFormattedPostWithDate(nasaObject, chat_id);
+        }
     }
 
 
@@ -95,7 +99,10 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
             System.err.println(e.getMessage());
         }
         assert nasaObject != null;
-        sendFormattedAndTranslatedPostWithDate(nasaObject,chat_id);
+        if (withTranslate) {
+            sendFormattedAndTranslatedPostWithDate(nasaObject, chat_id);
+        } else { sendFormattedPostWithDate(nasaObject, chat_id);
+        }
     }
 
     private void givePostedOnDatePicture(String date) throws IOException {
@@ -107,7 +114,10 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
             sendMessage("Нет картинки на эту дату.",chat_id);
         }
         assert nasaObject != null;
-        sendFormattedAndTranslatedPostWithDate(nasaObject,chat_id);
+        if (withTranslate) {
+            sendFormattedAndTranslatedPostWithDate(nasaObject, chat_id);
+        } else { sendFormattedPostWithDate(nasaObject, chat_id);
+        }
     }
 
     @Override
@@ -147,6 +157,19 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
                 + "</a>"
                 + "\n(Опубликовано " + nasaObject.getDate() + ")\n\n"
                 + translatedExplanation,
+                chat_id);
+    }
+
+    private void sendFormattedPostWithDate(NasaObject nasaObject, long chat_id) {
+        sendMessage("<a href=\""
+                + nasaObject.getUrl()
+                + "\" >"
+                + "<b>"
+                + nasaObject.getTitle()
+                + "</b>"
+                + "</a>"
+                + "\n(Posted on " + nasaObject.getDate() + ")\n\n"
+                + nasaObject.getExplanation(),
                 chat_id);
     }
 
