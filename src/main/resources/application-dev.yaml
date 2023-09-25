@@ -1,7 +1,8 @@
 telegram:
   api-url: "https://api.telegram.org/"
   bot-name: "NASAPic_bot"
-  webhook-path: "https://601f-178-134-101-193.ngrok-free.app"
+  bot-token: "${BOT_TOKEN}"
+  webhook-path: "https://7525-178-134-101-193.ngrok-free.app/"
   bot-path: ""
 server:
   port: "80"

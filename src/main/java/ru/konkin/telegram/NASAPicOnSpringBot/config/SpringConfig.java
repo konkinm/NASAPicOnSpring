@@ -37,7 +37,7 @@ public class SpringConfig {
 
     @Bean
     public String getBotToken() {
-        return System.getenv("BOT_TOKEN");
+        return telegramConfig.getBotToken();
     }
 
     @Bean
