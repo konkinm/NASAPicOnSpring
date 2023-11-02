@@ -16,7 +16,7 @@ import java.util.List;
 
 import ru.konkin.telegram.NASAPicOnSpringBot.model.UserObject;
 import ru.konkin.telegram.NASAPicOnSpringBot.repo.UserRepo;
-import ru.konkin.telegram.NASAPicOnSpringBot.service.NASAPicOnSpringBot;
+import ru.konkin.telegram.NASAPicOnSpringBot.web.NASAPicOnSpringBot;
 
 @Configuration
 @AllArgsConstructor

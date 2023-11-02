@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.konkin.telegram.NASAPicOnSpringBot.model.UserObject;
 import ru.konkin.telegram.NASAPicOnSpringBot.repo.UserRepo;
-import ru.konkin.telegram.NASAPicOnSpringBot.service.NASAPicOnSpringBot;
 
 import java.io.IOException;
 

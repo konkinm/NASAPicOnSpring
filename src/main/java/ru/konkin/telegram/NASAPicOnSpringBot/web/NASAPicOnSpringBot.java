@@ -1,4 +1,4 @@
-package ru.konkin.telegram.NASAPicOnSpringBot.service;
+package ru.konkin.telegram.NASAPicOnSpringBot.web;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -28,12 +28,6 @@ import java.util.regex.Pattern;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class NASAPicOnSpringBot extends SpringWebhookBot {
-    String botPath;
-    String botUsername;
-    String errorText;
-    Boolean withTranslate;
-    public static long chat_id;
-
     public static final String HELP_TEXT = """
             Привет, я бот NASA! Я высылаю ссылки на картинки (или видео) с описанием по запросу. Введи команду:
             /give чтобы получить сегодняшнюю картинку;
@@ -41,6 +35,11 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
             Либо введи дату в формате <b>YYYY-MM-DD</b> и я пришлю ссылку на картинку с описанием, опубликованную в тот день.
             !Дата должна быть не раньше 1995-06-20!
             Напоминаю, что картинки на сайте NASA обновляются раз в сутки""";
+    public static long chat_id;
+    String botPath;
+    String botUsername;
+    String errorText;
+    Boolean withTranslate;
 
     public NASAPicOnSpringBot(SetWebhook setWebhook, String botToken) {
         super(setWebhook, botToken);
@@ -58,18 +57,18 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
                 assert text != null;
                 final Matcher matcher = pattern.matcher(text);
                 if (matcher.find()) {
-                        String date = matcher.group(0);
-                        if (!Objects.equals(date, "")) {
-                            givePostedOnDatePicture(date);
-                        } else {
-                            System.err.println("Parsing error!");
-                        }
+                    String date = matcher.group(0);
+                    if (!Objects.equals(date, "")) {
+                        givePostedOnDatePicture(date);
                     } else {
+                        System.err.println("Parsing error!");
+                    }
+                } else {
                     switch (text) {
-                        case "/start", "/help" -> sendMessage(HELP_TEXT,chat_id);
+                        case "/start", "/help" -> sendMessage(HELP_TEXT, chat_id);
                         case "/give" -> giveTodayPicture(chat_id);
                         case "/random" -> giveRandomPicture(chat_id);
-                        default -> sendMessage("Команда не поддерживается",chat_id);
+                        default -> sendMessage("Команда не поддерживается", chat_id);
                     }
                 }
             }
@@ -86,7 +85,8 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
         assert nasaObject != null;
         if (withTranslate) {
             sendFormattedAndTranslatedPostWithDate(nasaObject, chat_id);
-        } else { sendFormattedPostWithDate(nasaObject, chat_id);
+        } else {
+            sendFormattedPostWithDate(nasaObject, chat_id);
         }
     }
 
@@ -101,7 +101,8 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
         assert nasaObject != null;
         if (withTranslate) {
             sendFormattedAndTranslatedPostWithDate(nasaObject, chat_id);
-        } else { sendFormattedPostWithDate(nasaObject, chat_id);
+        } else {
+            sendFormattedPostWithDate(nasaObject, chat_id);
         }
     }
 
@@ -111,12 +112,13 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
             nasaObject = NasaApiClient.getNASAObject(NasaApiClient.makeNasaApiRequest("?date=" + date));
         } catch (IOException e) {
             System.err.println(e.getMessage());
-            sendMessage("Нет картинки на эту дату.",chat_id);
+            sendMessage("Нет картинки на эту дату.", chat_id);
         }
         assert nasaObject != null;
         if (withTranslate) {
             sendFormattedAndTranslatedPostWithDate(nasaObject, chat_id);
-        } else { sendFormattedPostWithDate(nasaObject, chat_id);
+        } else {
+            sendFormattedPostWithDate(nasaObject, chat_id);
         }
     }
 
@@ -135,7 +137,7 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
         String title = nasaObject.getTitle();
         String explanation = nasaObject.getExplanation();
         List<String> translatedTexts = YandexTranslateApiClient
-                .translate(new ArrayList<>(Arrays.asList(title,explanation)));
+                .translate(new ArrayList<>(Arrays.asList(title, explanation)));
         String translatedTitle = "";
         if (!translatedTexts.isEmpty()) {
             translatedTitle = translatedTexts.get(0);
@@ -148,28 +150,30 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
         } else {
             System.out.println("WARN: 'transletedTexts' has only one element!");
         }
+        String hdurl = nasaObject.getHdurl();
         sendMessage("<a href=\""
-                + nasaObject.getUrl()
-                + "\" >"
-                + "<b>"
-                + translatedTitle
-                + "</b>"
-                + "</a>"
-                + "\n(Опубликовано " + nasaObject.getDate() + ")\n\n"
-                + translatedExplanation,
+                        + (hdurl.isEmpty() ? nasaObject.getUrl() : hdurl)
+                        + "\" >"
+                        + "<b>"
+                        + translatedTitle
+                        + "</b>"
+                        + "</a>"
+                        + "\n(Опубликовано " + nasaObject.getDate() + ")\n\n"
+                        + translatedExplanation,
                 chat_id);
     }
 
     private void sendFormattedPostWithDate(NasaObject nasaObject, long chat_id) {
+        String hdurl = nasaObject.getHdurl();
         sendMessage("<a href=\""
-                + nasaObject.getUrl()
-                + "\" >"
-                + "<b>"
-                + nasaObject.getTitle()
-                + "</b>"
-                + "</a>"
-                + "\n(Posted on " + nasaObject.getDate() + ")\n\n"
-                + nasaObject.getExplanation(),
+                        + (hdurl.isEmpty() ? nasaObject.getUrl() : hdurl)
+                        + "\" >"
+                        + "<b>"
+                        + nasaObject.getTitle()
+                        + "</b>"
+                        + "</a>"
+                        + "\n(Posted on " + nasaObject.getDate() + ")\n\n"
+                        + nasaObject.getExplanation(),
                 chat_id);
     }
 
