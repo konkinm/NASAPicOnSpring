@@ -17,7 +17,7 @@ public class GiveController {
     private UserRepo userRepo;
 
     @GetMapping("/give")
-    public ResponseEntity<Object> handleRequest() throws IOException {
+    public ResponseEntity<?> handleRequest() throws IOException {
         initUserRepo();
         long chat_id = userRepo.getUsers().get(0).getCHAT_ID();
         nasaPicOnSpringBot.giveTodayPicture(chat_id);

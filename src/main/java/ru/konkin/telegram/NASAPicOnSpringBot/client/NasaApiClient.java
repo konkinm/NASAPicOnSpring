@@ -5,20 +5,26 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.springframework.stereotype.Component;
 import ru.konkin.telegram.NASAPicOnSpringBot.config.NasaAPIConfig;
 import ru.konkin.telegram.NASAPicOnSpringBot.model.NasaObject;
 
 import java.io.IOException;
 
+@Component
 public class NasaApiClient {
+    private final NasaAPIConfig nasaAPIConfig;
+    private final ObjectMapper mapper = new ObjectMapper();
 
-    private static final ObjectMapper mapper = new ObjectMapper();
-
-    public static String makeNasaApiRequest(String param) {
-        return NasaAPIConfig.API_BASE_URI + param;
+    public NasaApiClient(NasaAPIConfig nasaAPIConfig) {
+        this.nasaAPIConfig = nasaAPIConfig;
     }
 
-    public static NasaObject getNASAObject(String uri) throws IOException {
+    public String makeNasaApiRequest(String param) {
+        return nasaAPIConfig.getAPI_BASE_URI() + param;
+    }
+
+    public NasaObject getNASAObject(String uri) throws IOException {
         try (CloseableHttpClient client = HttpClients.createDefault();
              CloseableHttpResponse response = client
                      .execute(new HttpGet(uri))) {
@@ -26,7 +32,7 @@ public class NasaApiClient {
         }
     }
 
-   public static NasaObject[] getNASAObjects(String uri) throws IOException, InterruptedException {
+   public NasaObject[] getNASAObjects(String uri) throws IOException, InterruptedException {
        try (CloseableHttpClient client = HttpClients.createDefault();
             CloseableHttpResponse response = client
                     .execute(new HttpGet(uri))) {

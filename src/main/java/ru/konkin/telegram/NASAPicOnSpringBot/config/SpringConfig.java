@@ -23,7 +23,7 @@ import ru.konkin.telegram.NASAPicOnSpringBot.web.NASAPicOnSpringBot;
 public class SpringConfig {
     private final TelegramConfig telegramConfig;
 
-    private List<BotCommand> listOfCommands = new ArrayList<>();
+    private List<BotCommand> listOfCommands;
 
     @Bean
     public UserRepo userRepo(List<UserObject> users){

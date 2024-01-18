@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updates.SetWebhook;
@@ -40,6 +41,9 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
     String botUsername;
     String errorText;
     Boolean withTranslate;
+
+    @Autowired
+    private NasaApiClient nasaApiClient;
 
     public NASAPicOnSpringBot(SetWebhook setWebhook, String botToken) {
         super(setWebhook, botToken);
@@ -78,7 +82,7 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
     private void giveRandomPicture(long chat_id) throws IOException {
         NasaObject nasaObject = null;
         try {
-            nasaObject = NasaApiClient.getNASAObjects(NasaApiClient.makeNasaApiRequest("?count=1"))[0];
+            nasaObject = nasaApiClient.getNASAObjects(nasaApiClient.makeNasaApiRequest("?count=1"))[0];
         } catch (IOException | InterruptedException e) {
             System.err.println(e.getMessage());
         }
@@ -94,7 +98,7 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
     public void giveTodayPicture(long chat_id) throws IOException {
         NasaObject nasaObject = null;
         try {
-            nasaObject = NasaApiClient.getNASAObject(NasaApiClient.makeNasaApiRequest(""));
+            nasaObject = nasaApiClient.getNASAObject(nasaApiClient.makeNasaApiRequest(""));
         } catch (IOException e) {
             System.err.println(e.getMessage());
         }
@@ -109,7 +113,7 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
     private void givePostedOnDatePicture(String date) throws IOException {
         NasaObject nasaObject = null;
         try {
-            nasaObject = NasaApiClient.getNASAObject(NasaApiClient.makeNasaApiRequest("?date=" + date));
+            nasaObject = nasaApiClient.getNASAObject(nasaApiClient.makeNasaApiRequest("?date=" + date));
         } catch (IOException e) {
             System.err.println(e.getMessage());
             sendMessage("Нет картинки на эту дату.", chat_id);
