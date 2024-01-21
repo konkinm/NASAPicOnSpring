@@ -48,6 +48,16 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
         super(setWebhook, botToken);
     }
 
+    @Override
+    public BotApiMethod<?> onWebhookUpdateReceived(Update update) {
+        try {
+            handleUpdate(update);
+        } catch (Exception e) {
+            chat_id = update.getMessage().getChatId();
+            System.err.println(e.getMessage());
+        }
+        return null;
+    }
 
     private void handleUpdate(Update update) throws IOException {
         if (!update.hasCallbackQuery()) {
@@ -93,12 +103,11 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
         }
         assert nasaObject != null;
         if (withTranslate) {
-            sendFormattedAndTranslatedPostWithDate(nasaObject, chat_id);
+            sendFormattedAndTranslatedPost(nasaObject, chat_id);
         } else {
-            sendFormattedPostWithDate(nasaObject, chat_id);
+            sendFormattedPost(nasaObject, chat_id);
         }
     }
-
 
     public void giveTodayPicture(long chat_id) throws IOException {
         NasaObject nasaObject = null;
@@ -109,9 +118,9 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
         }
         assert nasaObject != null;
         if (withTranslate) {
-            sendFormattedAndTranslatedPostWithDate(nasaObject, chat_id);
+            sendFormattedAndTranslatedPost(nasaObject, chat_id);
         } else {
-            sendFormattedPostWithDate(nasaObject, chat_id);
+            sendFormattedPost(nasaObject, chat_id);
         }
     }
 
@@ -126,26 +135,50 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
         }
         assert nasaObject != null;
         if (withTranslate) {
-            sendFormattedAndTranslatedPostWithDate(nasaObject, chat_id);
+            sendFormattedAndTranslatedPost(nasaObject, chat_id);
         } else {
-            sendFormattedPostWithDate(nasaObject, chat_id);
+            sendFormattedPost(nasaObject, chat_id);
         }
     }
 
-    @Override
-    public BotApiMethod<?> onWebhookUpdateReceived(Update update) {
-        try {
-            handleUpdate(update);
-        } catch (Exception e) {
-            chat_id = update.getMessage().getChatId();
-            System.err.println(e.getMessage());
-        }
-        return null;
+    private String getFormattedMessage(NasaObject nasaObject) {
+        return getFormattedMessage(nasaObject, nasaObject.title(), nasaObject.explanation());
     }
 
-    private void sendFormattedAndTranslatedPostWithDate(NasaObject nasaObject, long chat_id) throws IOException {
-        String title = nasaObject.getTitle();
-        String explanation = nasaObject.getExplanation();
+    private String getFormattedMessage(NasaObject nasaObject,
+                                       String customTitle,
+                                       String customExplanation) {
+        String url = nasaObject.url();
+        String hdUrl = nasaObject.hdUrl();
+        StringBuilder message = new StringBuilder();
+        message.append("<a href=\"")
+                .append(url)
+                .append("\">")
+                .append("<b>")
+                .append(customTitle)
+                .append("</b>")
+                .append("</a>");
+        if (!url.equalsIgnoreCase(hdUrl)) {
+            message.append(" | <a href=\"")
+                    .append(hdUrl)
+                    .append("\">")
+                    .append("HD")
+                    .append("</a>");
+        }
+        message.append("\n(Posted on ")
+                .append(nasaObject.date())
+                .append(")\n\n")
+                .append(customExplanation);
+        return message.toString();
+    }
+
+    private void sendFormattedPost(NasaObject nasaObject, long chat_id) {
+        sendMessage(getFormattedMessage(nasaObject), chat_id);
+    }
+
+    private void sendFormattedAndTranslatedPost(NasaObject nasaObject, long chat_id) throws IOException {
+        String title = nasaObject.title();
+        String explanation = nasaObject.explanation();
         List<String> translatedTexts = YandexTranslateApiClient
                 .translate(new ArrayList<>(Arrays.asList(title, explanation)));
         String translatedTitle = "";
@@ -160,30 +193,7 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
         } else {
             System.out.println("WARN: 'transletedTexts' has only one element!");
         }
-        String hdurl = nasaObject.getHdurl();
-        sendMessage("<a href=\""
-                        + (hdurl.isEmpty() ? nasaObject.getUrl() : hdurl)
-                        + "\" >"
-                        + "<b>"
-                        + translatedTitle
-                        + "</b>"
-                        + "</a>"
-                        + "\n(Опубликовано " + nasaObject.getDate() + ")\n\n"
-                        + translatedExplanation,
-                chat_id);
-    }
-
-    private void sendFormattedPostWithDate(NasaObject nasaObject, long chat_id) {
-        String hdurl = nasaObject.getHdurl();
-        sendMessage("<a href=\""
-                        + (hdurl.isEmpty() ? nasaObject.getUrl() : hdurl)
-                        + "\" >"
-                        + "<b>"
-                        + nasaObject.getTitle()
-                        + "</b>"
-                        + "</a>"
-                        + "\n(Posted on " + nasaObject.getDate() + ")\n\n"
-                        + nasaObject.getExplanation(),
+        sendMessage(getFormattedMessage(nasaObject, translatedTitle, translatedExplanation),
                 chat_id);
     }
 
