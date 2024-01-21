@@ -12,16 +12,17 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.starter.SpringWebhookBot;
-import ru.konkin.telegram.NASAPicOnSpringBot.client.NasaApiClient;
-import ru.konkin.telegram.NASAPicOnSpringBot.client.YandexTranslateApiClient;
 import ru.konkin.telegram.NASAPicOnSpringBot.model.NasaObject;
+import ru.konkin.telegram.NASAPicOnSpringBot.service.NasaService;
+import ru.konkin.telegram.NASAPicOnSpringBot.service.TranslateService;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static ru.konkin.telegram.NASAPicOnSpringBot.util.NasaObjectUtil.getFormattedMessage;
 
 
 @Getter
@@ -42,7 +43,10 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
     Boolean withTranslate;
 
     @Autowired
-    private NasaApiClient nasaApiClient;
+    NasaService nasaService;
+
+    @Autowired
+    TranslateService translateService;
 
     public NASAPicOnSpringBot(SetWebhook setWebhook, String botToken) {
         super(setWebhook, botToken);
@@ -96,106 +100,42 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
     }
 
     private void giveRandomPicture(long chat_id) throws IOException {
-        NasaObject nasaObject = null;
-        try {
-            nasaObject = nasaApiClient.getNASAObjects(nasaApiClient.makeNasaApiRequest("?count=1"))[0];
-        } catch (IOException | InterruptedException e) {
-            System.err.println(e.getMessage());
-        }
-        assert nasaObject != null;
+        NasaObject random = nasaService.getRandom();
+        assert random != null;
         if (withTranslate) {
-            sendFormattedAndTranslatedPost(nasaObject, chat_id);
+            sendTranslatedAndFormattedMessage(random, chat_id);
         } else {
-            sendFormattedPost(nasaObject, chat_id);
+            sendFormattedMessage(random, chat_id);
         }
     }
 
     public void giveTodayPicture(long chat_id) throws IOException {
-        NasaObject nasaObject = null;
-        try {
-            nasaObject = nasaApiClient.getNASAObject(nasaApiClient.makeNasaApiRequest(""));
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
-        }
-        assert nasaObject != null;
+        NasaObject today = nasaService.getToday();
+        assert today != null;
         if (withTranslate) {
-            sendFormattedAndTranslatedPost(nasaObject, chat_id);
+            sendTranslatedAndFormattedMessage(today, chat_id);
         } else {
-            sendFormattedPost(nasaObject, chat_id);
+            sendFormattedMessage(today, chat_id);
         }
     }
 
     private void givePostedOnDatePicture(LocalDate date) throws IOException {
-        NasaObject nasaObject = null;
-        try {
-            nasaObject = nasaApiClient.getNASAObject(nasaApiClient.makeNasaApiRequest("?date=" +
-                    date.format(DateTimeFormatter.ISO_LOCAL_DATE)));
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
-            sendMessage("Нет картинки на эту дату.", chat_id);
-        }
-        assert nasaObject != null;
+        NasaObject onDate = nasaService.getOnDate(date);
+        assert onDate != null;
         if (withTranslate) {
-            sendFormattedAndTranslatedPost(nasaObject, chat_id);
+            sendTranslatedAndFormattedMessage(onDate, chat_id);
         } else {
-            sendFormattedPost(nasaObject, chat_id);
+            sendFormattedMessage(onDate, chat_id);
         }
     }
 
-    private String getFormattedMessage(NasaObject nasaObject) {
-        return getFormattedMessage(nasaObject, nasaObject.title(), nasaObject.explanation());
-    }
-
-    private String getFormattedMessage(NasaObject nasaObject,
-                                       String customTitle,
-                                       String customExplanation) {
-        String url = nasaObject.url();
-        String hdUrl = nasaObject.hdUrl();
-        StringBuilder message = new StringBuilder();
-        message.append("<a href=\"")
-                .append(url)
-                .append("\">")
-                .append("<b>")
-                .append(customTitle)
-                .append("</b>")
-                .append("</a>");
-        if (!url.equalsIgnoreCase(hdUrl)) {
-            message.append(" | <a href=\"")
-                    .append(hdUrl)
-                    .append("\">")
-                    .append("HD")
-                    .append("</a>");
-        }
-        message.append("\n(Posted on ")
-                .append(nasaObject.date())
-                .append(")\n\n")
-                .append(customExplanation);
-        return message.toString();
-    }
-
-    private void sendFormattedPost(NasaObject nasaObject, long chat_id) {
+    private void sendFormattedMessage(NasaObject nasaObject, long chat_id) {
         sendMessage(getFormattedMessage(nasaObject), chat_id);
     }
 
-    private void sendFormattedAndTranslatedPost(NasaObject nasaObject, long chat_id) throws IOException {
-        String title = nasaObject.title();
-        String explanation = nasaObject.explanation();
-        List<String> translatedTexts = YandexTranslateApiClient
-                .translate(new ArrayList<>(Arrays.asList(title, explanation)));
-        String translatedTitle = "";
-        if (!translatedTexts.isEmpty()) {
-            translatedTitle = translatedTexts.get(0);
-        } else {
-            System.err.println("'transletedTexts' is empty!");
-        }
-        String translatedExplanation = "";
-        if (translatedTexts.size() > 1) {
-            translatedExplanation = translatedTexts.get(1);
-        } else {
-            System.out.println("WARN: 'transletedTexts' has only one element!");
-        }
-        sendMessage(getFormattedMessage(nasaObject, translatedTitle, translatedExplanation),
-                chat_id);
+    private void sendTranslatedAndFormattedMessage(NasaObject nasaObject, long chat_id) throws IOException {
+        NasaObject translated = translateService.translateTitleAndExplanation(nasaObject);
+        sendMessage(getFormattedMessage(translated), chat_id);
     }
 
     private void sendMessage(String messageText, long chat_id) {
