@@ -17,10 +17,9 @@ import ru.konkin.telegram.NASAPicOnSpringBot.client.YandexTranslateApiClient;
 import ru.konkin.telegram.NASAPicOnSpringBot.model.NasaObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -61,11 +60,17 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
                 assert text != null;
                 final Matcher matcher = pattern.matcher(text);
                 if (matcher.find()) {
-                    String date = matcher.group(0);
-                    if (!Objects.equals(date, "")) {
-                        givePostedOnDatePicture(date);
-                    } else {
-                        System.err.println("Parsing error!");
+                    String fromRegex = matcher.group(0);
+                    try {
+                        LocalDate date = LocalDate.parse(fromRegex, DateTimeFormatter.ISO_LOCAL_DATE);
+                        if (!date.isBefore(LocalDate.of(1995, 6, 20))) {
+                            givePostedOnDatePicture(date);
+                        } else {
+                            sendMessage("Введённая дата должна быть не раньше 1995-06-20", chat_id);
+                        }
+                    } catch (Exception e) {
+                        System.err.println("Parsing error! " + e.getMessage());
+                        sendMessage("Неверный формат даты.\nВведите дату в формате <b>YYYY-MM-DD</b>", chat_id);
                     }
                 } else {
                     switch (text) {
@@ -110,10 +115,11 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
         }
     }
 
-    private void givePostedOnDatePicture(String date) throws IOException {
+    private void givePostedOnDatePicture(LocalDate date) throws IOException {
         NasaObject nasaObject = null;
         try {
-            nasaObject = nasaApiClient.getNASAObject(nasaApiClient.makeNasaApiRequest("?date=" + date));
+            nasaObject = nasaApiClient.getNASAObject(nasaApiClient.makeNasaApiRequest("?date=" +
+                    date.format(DateTimeFormatter.ISO_LOCAL_DATE)));
         } catch (IOException e) {
             System.err.println(e.getMessage());
             sendMessage("Нет картинки на эту дату.", chat_id);
