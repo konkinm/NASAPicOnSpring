@@ -19,7 +19,7 @@ public class GiveController {
     @GetMapping("/give")
     public ResponseEntity<?> handleRequest() throws IOException {
         initUserRepo();
-        long chat_id = userRepo.getUsers().get(0).getCHAT_ID();
+        long chat_id = userRepo.getUsers().get(0).CHAT_ID();
         nasaPicOnSpringBot.giveTodayPicture(chat_id);
         return new ResponseEntity<>(HttpStatus.OK);
     }

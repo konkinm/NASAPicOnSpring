@@ -1,36 +1,24 @@
 package ru.konkin.telegram.NASAPicOnSpringBot.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
 
-@Getter
-public class NasaObject {
-    private final String credit;
-    private final String copyright;
-    private final String date;
-    private final String explanation;
-    private final String hdurl;
-    private final String mediaType;
-    private final String serviceVersion;
-    private final String title;
-    private final String url;
-
+public record NasaObject(String credit, String copyright, String date, String explanation, String hdUrl,
+                         String mediaType, String serviceVersion, String title, String url) {
     public NasaObject(
             @JsonProperty("credit") String credit,
             @JsonProperty("copyright") String copyright,
             @JsonProperty("date") String date,
             @JsonProperty("explanation") String explanation,
-            @JsonProperty("hdurl") String hdurl,
+            @JsonProperty("hdurl") String hdUrl,
             @JsonProperty("media_type") String mediaType,
             @JsonProperty("service_version") String serviceVersion,
             @JsonProperty("title") String title,
-            @JsonProperty("url") String url)
-    {
+            @JsonProperty("url") String url) {
         this.credit = credit;
         this.copyright = copyright;
         this.date = date;
         this.explanation = explanation;
-        this.hdurl = hdurl;
+        this.hdUrl = hdUrl;
         this.mediaType = mediaType;
         this.serviceVersion = serviceVersion;
         this.title = title;
@@ -44,7 +32,7 @@ public class NasaObject {
                 ", copyright='" + copyright + '\'' +
                 ", date='" + date + '\'' +
                 ", explanation='" + explanation + '\'' +
-                ", hdurl='" + hdurl + '\'' +
+                ", hdurl='" + hdUrl + '\'' +
                 ", mediaType='" + mediaType + '\'' +
                 ", serviceVersion='" + serviceVersion + '\'' +
                 ", title='" + title + '\'' +
