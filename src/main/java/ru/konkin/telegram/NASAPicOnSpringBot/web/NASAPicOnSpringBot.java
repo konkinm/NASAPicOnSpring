@@ -73,10 +73,11 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
                     String fromRegex = matcher.group(0);
                     try {
                         LocalDate date = LocalDate.parse(fromRegex, DateTimeFormatter.ISO_LOCAL_DATE);
-                        if (!date.isBefore(LocalDate.of(1995, 6, 20))) {
+                        if (!date.isBefore(LocalDate.of(1995, 6, 20)) &&
+                                !date.isAfter(LocalDate.now())) {
                             givePostedOnDatePicture(date);
                         } else {
-                            sendMessage("Введённая дата должна быть не раньше 1995-06-20", chat_id);
+                            sendMessage("Введённая дата должна быть не раньше 1995-06-20 и не позже сегодняшней даты", chat_id);
                         }
                     } catch (Exception e) {
                         System.err.println("Parsing error! " + e.getMessage());
