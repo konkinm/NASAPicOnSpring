@@ -1,10 +1,21 @@
 package ru.konkin.telegram.NASAPicOnSpringBot.config;
 
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.experimental.FieldDefaults;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
+
+@Component
+@Getter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class YandexTranslateApiConfig {
-
-    public static final String API_BASE_URI = "https://translate.api.cloud.yandex.net/translate/v2/translate";
-    public static final String FOLDER_ID = "b1gh84dl01a0jkghcf9b";
-    public static final String API_TOKEN = System.getenv("YA_API_TOKEN");
-
+    @Value("${yandex-api.api-url}")
+    String API_BASE_URI;
+    @Value("${yandex-api.folder-id}")
+    String FOLDER_ID;
+    @Value("${yandex-api.api-token}")
+    String API_TOKEN;
 }

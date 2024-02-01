@@ -10,6 +10,10 @@ message:
   errorText:
     text: "Почему-то не сработало."
 translate: false
+yandex-api:
+  api-url: "https://translate.api.cloud.yandex.net/translate/v2/translate"
+  folder-id: "b1gh84dl01a0jkghcf9b"
+  api-token: "${YA_API_TOKEN}"
 apod:
   api-url: "https://apod.ellanan.com/api"
 

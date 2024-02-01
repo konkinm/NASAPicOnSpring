@@ -1,22 +1,18 @@
 package ru.konkin.telegram.NASAPicOnSpringBot.config;
 
 import lombok.AllArgsConstructor;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.methods.updates.SetWebhook;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import ru.konkin.telegram.NASAPicOnSpringBot.model.UserObject;
 import ru.konkin.telegram.NASAPicOnSpringBot.repo.UserRepo;
 import ru.konkin.telegram.NASAPicOnSpringBot.web.NASAPicOnSpringBot;
+
+import java.util.List;
 
 @Configuration
 @AllArgsConstructor

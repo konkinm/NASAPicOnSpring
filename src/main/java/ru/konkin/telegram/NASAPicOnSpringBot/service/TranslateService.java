@@ -1,5 +1,6 @@
 package ru.konkin.telegram.NASAPicOnSpringBot.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.konkin.telegram.NASAPicOnSpringBot.client.YandexTranslateApiClient;
 import ru.konkin.telegram.NASAPicOnSpringBot.model.NasaObject;
@@ -12,10 +13,13 @@ import java.util.List;
 
 @Service
 public class TranslateService {
+    @Autowired
+    private YandexTranslateApiClient client;
+
     public NasaObject translateTitleAndExplanation(NasaObject input) throws IOException {
         String title = input.title();
         String explanation = input.explanation();
-        List<String> translatedTexts = YandexTranslateApiClient
+        List<String> translatedTexts = client
                 .translate(new ArrayList<>(Arrays.asList(title, explanation)));
         String translatedTitle = "";
         String translatedExplanation = "";
