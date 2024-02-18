@@ -55,14 +55,14 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
     @Override
     public BotApiMethod<?> onWebhookUpdateReceived(Update update) {
         try {
-            handleUpdate(update);
+            return handleUpdate(update);
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
         return null;
     }
 
-    private void handleUpdate(Update update) throws IOException {
+    public SendMessage handleUpdate(Update update) throws IOException {
         if (!update.hasCallbackQuery()) {
             if (update.hasMessage()) {
                 Message message = update.getMessage();
@@ -78,75 +78,79 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
                         LocalDate date = LocalDate.parse(fromRegex, DateTimeFormatter.ISO_LOCAL_DATE);
                         if (!date.isBefore(LocalDate.of(1995, 6, 20)) &&
                                 !date.isAfter(LocalDate.now())) {
-                            givePostedOnDatePicture(date);
+                            return givePostedOnDatePicture(date);
                         } else {
-                            sendMessage("Введённая дата должна быть не раньше 1995-06-20 и не позже сегодняшней даты", chat_id);
+                            return sendMessage("Введённая дата должна быть не раньше 1995-06-20 и не позже сегодняшней даты", chat_id);
                         }
                     } catch (Exception e) {
                         System.err.println("Parsing error! " + e.getMessage());
-                        sendMessage("Неверный формат даты.\nВведите дату в формате <b>YYYY-MM-DD</b>", chat_id);
+                        return sendMessage("Неверный формат даты.\nВведите дату в формате <b>YYYY-MM-DD</b>", chat_id);
                     }
                 } else {
                     switch (text) {
-                        case "/start", "/help" -> sendMessage(HELP_TEXT, chat_id);
-                        case "/give" -> giveTodayPicture(chat_id);
-                        case "/random" -> giveRandomPicture(chat_id);
-                        default -> sendMessage("Команда не поддерживается", chat_id);
+                        case "/start", "/help" -> {
+                            return sendMessage(HELP_TEXT, chat_id);
+                        }
+                        case "/give" -> {
+                            return giveTodayPicture(chat_id);
+                        }
+                        case "/random" -> {
+                            return giveRandomPicture(chat_id);
+                        }
+                        default -> {
+                            return sendMessage("Команда не поддерживается", chat_id);
+                        }
                     }
                 }
             }
         }
+        return null;
     }
 
-    private void giveRandomPicture(long chat_id) throws IOException {
+    private SendMessage giveRandomPicture(long chat_id) throws IOException {
         NasaObject random = nasaService.getRandom();
         assert random != null;
         if (withTranslate) {
-            sendTranslatedAndFormattedMessage(random, chat_id);
+            return sendTranslatedAndFormattedMessage(random, chat_id);
         } else {
-            sendFormattedMessage(random, chat_id);
+            return sendFormattedMessage(random, chat_id);
         }
     }
 
-    public void giveTodayPicture(long chat_id) throws IOException {
+    public SendMessage giveTodayPicture(long chat_id) throws IOException {
         NasaObject today = nasaService.getToday();
         assert today != null;
         if (withTranslate) {
-            sendTranslatedAndFormattedMessage(today, chat_id);
+            return sendTranslatedAndFormattedMessage(today, chat_id);
         } else {
-            sendFormattedMessage(today, chat_id);
+            return sendFormattedMessage(today, chat_id);
         }
     }
 
-    private void givePostedOnDatePicture(LocalDate date) throws IOException {
+    private SendMessage givePostedOnDatePicture(LocalDate date) throws IOException {
         NasaObject onDate = nasaService.getOnDate(date);
         assert onDate != null;
         if (withTranslate) {
-            sendTranslatedAndFormattedMessage(onDate, chat_id);
+            return sendTranslatedAndFormattedMessage(onDate, chat_id);
         } else {
-            sendFormattedMessage(onDate, chat_id);
+            return sendFormattedMessage(onDate, chat_id);
         }
     }
 
-    private void sendFormattedMessage(NasaObject nasaObject, long chat_id) {
-        sendMessage(getFormattedMessage(nasaObject), chat_id);
+    private SendMessage sendFormattedMessage(NasaObject nasaObject, long chat_id) {
+        return sendMessage(getFormattedMessage(nasaObject), chat_id);
     }
 
-    private void sendTranslatedAndFormattedMessage(NasaObject nasaObject, long chat_id) throws IOException {
+    private SendMessage sendTranslatedAndFormattedMessage(NasaObject nasaObject, long chat_id) throws IOException {
         NasaObject translated = translateService.translateTitleAndExplanation(nasaObject);
-        sendMessage(getFormattedMessage(translated), chat_id);
+        return sendMessage(getFormattedMessage(translated), chat_id);
     }
 
-    private void sendMessage(String messageText, long chat_id) {
+    private SendMessage sendMessage(String messageText, long chat_id) {
         SendMessage message = new SendMessage();
         message.setChatId(chat_id);
         message.setText(messageText);
         message.enableHtml(true);
-        try {
-            execute(message);
-            System.out.printf("Message to chat_id %s sent successfully.\n", chat_id);
-        } catch (TelegramApiException e) {
-            System.err.println(e.getMessage());
-        }
+        return message;
     }
 }

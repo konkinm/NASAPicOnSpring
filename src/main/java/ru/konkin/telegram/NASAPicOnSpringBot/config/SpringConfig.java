@@ -1,8 +1,12 @@
 package ru.konkin.telegram.NASAPicOnSpringBot.config;
 
 import lombok.AllArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.methods.updates.SetWebhook;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
@@ -12,14 +16,17 @@ import ru.konkin.telegram.NASAPicOnSpringBot.model.UserObject;
 import ru.konkin.telegram.NASAPicOnSpringBot.repo.UserRepo;
 import ru.konkin.telegram.NASAPicOnSpringBot.web.NASAPicOnSpringBot;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
-@AllArgsConstructor
+@Import(TelegramConfig.class)
+@ComponentScan(basePackages = "ru.konkin.telegram.NASAPicOnSpringBot")
 public class SpringConfig {
-    private final TelegramConfig telegramConfig;
+    @Autowired
+    private TelegramConfig telegramConfig;
 
-    private List<BotCommand> listOfCommands;
+    private List<BotCommand> listOfCommands = new ArrayList<>();
 
     @Bean
     public UserRepo userRepo(List<UserObject> users){
