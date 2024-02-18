@@ -1,9 +1,9 @@
-package ru.konkin.telegram.NASAPicOnSpringBot.service;
+package space.maxkonkin.nasapicbot.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.konkin.telegram.NASAPicOnSpringBot.client.YandexTranslateApiClient;
-import ru.konkin.telegram.NASAPicOnSpringBot.model.NasaObject;
+import space.maxkonkin.nasapicbot.client.YandexTranslateApiClient;
+import space.maxkonkin.nasapicbot.model.NasaObject;
 
 import java.io.IOException;
 import java.util.ArrayList;

@@ -1,10 +1,10 @@
-package ru.konkin.telegram.NASAPicOnSpringBot.web;
+package space.maxkonkin.nasapicbot.web;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import ru.konkin.telegram.NASAPicOnSpringBot.config.SpringConfig;
+import space.maxkonkin.nasapicbot.config.SpringConfig;
 
 import java.io.IOException;
 import java.util.function.Function;

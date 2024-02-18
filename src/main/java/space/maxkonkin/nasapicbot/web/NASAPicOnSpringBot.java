@@ -1,4 +1,4 @@
-package ru.konkin.telegram.NASAPicOnSpringBot.web;
+package space.maxkonkin.nasapicbot.web;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -10,19 +10,17 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updates.SetWebhook;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.starter.SpringWebhookBot;
-import ru.konkin.telegram.NASAPicOnSpringBot.model.NasaObject;
-import ru.konkin.telegram.NASAPicOnSpringBot.service.NasaService;
-import ru.konkin.telegram.NASAPicOnSpringBot.service.TranslateService;
+import space.maxkonkin.nasapicbot.model.NasaObject;
+import space.maxkonkin.nasapicbot.service.NasaService;
+import space.maxkonkin.nasapicbot.service.TranslateService;
+import space.maxkonkin.nasapicbot.util.NasaObjectUtil;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static ru.konkin.telegram.NASAPicOnSpringBot.util.NasaObjectUtil.getFormattedMessage;
 
 
 @Getter
@@ -138,12 +136,12 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
     }
 
     private SendMessage sendFormattedMessage(NasaObject nasaObject, long chat_id) {
-        return sendMessage(getFormattedMessage(nasaObject), chat_id);
+        return sendMessage(NasaObjectUtil.getFormattedMessage(nasaObject), chat_id);
     }
 
     private SendMessage sendTranslatedAndFormattedMessage(NasaObject nasaObject, long chat_id) throws IOException {
         NasaObject translated = translateService.translateTitleAndExplanation(nasaObject);
-        return sendMessage(getFormattedMessage(translated), chat_id);
+        return sendMessage(NasaObjectUtil.getFormattedMessage(translated), chat_id);
     }
 
     private SendMessage sendMessage(String messageText, long chat_id) {

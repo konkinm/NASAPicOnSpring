@@ -1,4 +1,4 @@
-package ru.konkin.telegram.NASAPicOnSpringBot.config;
+package space.maxkonkin.nasapicbot.config;
 
 
 import lombok.AccessLevel;

@@ -1,4 +1,4 @@
-package ru.konkin.telegram.NASAPicOnSpringBot.client;
+package space.maxkonkin.nasapicbot.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -6,8 +6,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.springframework.stereotype.Component;
-import ru.konkin.telegram.NASAPicOnSpringBot.config.NasaAPIConfig;
-import ru.konkin.telegram.NASAPicOnSpringBot.model.NasaObject;
+import space.maxkonkin.nasapicbot.config.NasaAPIConfig;
+import space.maxkonkin.nasapicbot.model.NasaObject;
 
 import java.io.IOException;
 

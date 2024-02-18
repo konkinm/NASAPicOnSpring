@@ -1,7 +1,7 @@
-package ru.konkin.telegram.NASAPicOnSpringBot.util;
+package space.maxkonkin.nasapicbot.util;
 
 import lombok.experimental.UtilityClass;
-import ru.konkin.telegram.NASAPicOnSpringBot.model.NasaObject;
+import space.maxkonkin.nasapicbot.model.NasaObject;
 
 @UtilityClass
 public class NasaObjectUtil {

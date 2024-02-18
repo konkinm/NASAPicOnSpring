@@ -1,4 +1,4 @@
-package ru.konkin.telegram.NASAPicOnSpringBot.client;
+package space.maxkonkin.nasapicbot.client;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -8,7 +8,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.springframework.stereotype.Component;
-import ru.konkin.telegram.NASAPicOnSpringBot.config.YandexTranslateApiConfig;
+import space.maxkonkin.nasapicbot.config.YandexTranslateApiConfig;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;

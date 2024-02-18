@@ -1,12 +1,12 @@
-package ru.konkin.telegram.NASAPicOnSpringBot.web;
+package space.maxkonkin.nasapicbot.web;
 
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.konkin.telegram.NASAPicOnSpringBot.model.UserObject;
-import ru.konkin.telegram.NASAPicOnSpringBot.repo.UserRepo;
+import space.maxkonkin.nasapicbot.model.UserObject;
+import space.maxkonkin.nasapicbot.repo.UserRepo;
 
 import java.io.IOException;
 

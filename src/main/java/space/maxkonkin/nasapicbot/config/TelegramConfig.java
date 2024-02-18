@@ -1,4 +1,4 @@
-package ru.konkin.telegram.NASAPicOnSpringBot.config;
+package space.maxkonkin.nasapicbot.config;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -15,7 +15,7 @@ import java.util.Objects;
 import java.util.Properties;
 
 @Configuration
-@PropertySource(value = "classpath:application-dev.yaml", factory = TelegramConfig.YamlPropertySourceFactory.class)
+@PropertySource(value = "classpath:application-${SPRING_PROFILE}.yaml", factory = TelegramConfig.YamlPropertySourceFactory.class)
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class TelegramConfig {

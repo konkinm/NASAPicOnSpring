@@ -1,6 +1,4 @@
-package ru.konkin.telegram.NASAPicOnSpringBot.config;
-
-import lombok.AllArgsConstructor;
+package space.maxkonkin.nasapicbot.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -12,16 +10,16 @@ import org.telegram.telegrambots.meta.api.methods.updates.SetWebhook;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import ru.konkin.telegram.NASAPicOnSpringBot.model.UserObject;
-import ru.konkin.telegram.NASAPicOnSpringBot.repo.UserRepo;
-import ru.konkin.telegram.NASAPicOnSpringBot.web.NASAPicOnSpringBot;
+import space.maxkonkin.nasapicbot.model.UserObject;
+import space.maxkonkin.nasapicbot.repo.UserRepo;
+import space.maxkonkin.nasapicbot.web.NASAPicOnSpringBot;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
 @Import(TelegramConfig.class)
-@ComponentScan(basePackages = "ru.konkin.telegram.NASAPicOnSpringBot")
+@ComponentScan(basePackages = "space.maxkonkin.nasapicbot")
 public class SpringConfig {
     @Autowired
     private TelegramConfig telegramConfig;

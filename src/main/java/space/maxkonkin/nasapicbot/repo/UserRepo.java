@@ -1,7 +1,7 @@
-package ru.konkin.telegram.NASAPicOnSpringBot.repo;
+package space.maxkonkin.nasapicbot.repo;
 
 import lombok.Getter;
-import ru.konkin.telegram.NASAPicOnSpringBot.model.UserObject;
+import space.maxkonkin.nasapicbot.model.UserObject;
 
 import java.util.List;
 
