@@ -21,6 +21,6 @@ logging:
   level:
     root: INFO
     org.springframework: ERROR
-    ru.konkin.telegram.NASAPicOnSpringBot: DEBUG
+    space.maxkonkin.nasapicbot: DEBUG
   pattern:
     console: "%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"
