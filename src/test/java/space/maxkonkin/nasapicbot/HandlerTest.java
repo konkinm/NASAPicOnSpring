@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import space.maxkonkin.nasapicbot.model.QueueMessage;
 import space.maxkonkin.nasapicbot.web.Handler;
 
-public class Main {
+public class HandlerTest {
     public static void main(String[] args) throws JsonProcessingException {
         final String MESSAGE = """
                 {
