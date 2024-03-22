@@ -10,3 +10,4 @@ log/
 /ngrok.bat
 /before_deploy.txt
 /deploy.cmd
+/authorized_key.json
