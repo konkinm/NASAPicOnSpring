@@ -10,8 +10,8 @@ import org.telegram.telegrambots.meta.api.methods.updates.SetWebhook;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import space.maxkonkin.nasapicbot.model.UserObject;
-import space.maxkonkin.nasapicbot.repo.UserRepo;
+import space.maxkonkin.nasapicbot.repository.UserDao;
+import space.maxkonkin.nasapicbot.service.UserService;
 import space.maxkonkin.nasapicbot.web.NASAPicOnSpringBot;
 
 import java.util.ArrayList;
@@ -27,8 +27,8 @@ public class SpringConfig {
     private List<BotCommand> listOfCommands = new ArrayList<>();
 
     @Bean
-    public UserRepo userRepo(List<UserObject> users){
-     return new UserRepo(users);
+    public UserService userService() {
+     return new UserService(new UserDao());
     }
 
     @Bean
