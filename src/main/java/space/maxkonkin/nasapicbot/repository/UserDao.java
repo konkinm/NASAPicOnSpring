@@ -9,6 +9,7 @@ import tech.ydb.table.values.PrimitiveValue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class UserDao implements Dao<User>{
 
@@ -27,7 +28,7 @@ public class UserDao implements Dao<User>{
     }
 
     @Override
-    public User getById(long chatId) {
+    public Optional<User> getById(long chatId) {
         var users = new ArrayList<User>();
         entityManager.execute("declare $chat_id as Uint64; " +
                         "select chat_id, name, is_scheduled, translate_lang_code from nasapic_users " +
@@ -38,7 +39,7 @@ public class UserDao implements Dao<User>{
                         users.add(User.fromResultSet(resultSet));
                     }
                 }));
-        return !users.isEmpty() ? users.get(0) : null;
+        return !users.isEmpty() ? Optional.of(users.getFirst()) : Optional.empty();
     }
 
     @Override
@@ -61,6 +62,6 @@ public class UserDao implements Dao<User>{
         entityManager.execute(
                 "declare $chat_id as Uint64;" +
                         "delete from nasapic_users where chat_id = $chat_id",
-                Params.of("$uuid", PrimitiveValue.newUint64(chatId)));
+                Params.of("$chat_id", PrimitiveValue.newUint64(chatId)));
     }
 }

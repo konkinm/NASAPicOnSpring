@@ -3,12 +3,13 @@ package space.maxkonkin.nasapicbot.repository;
 import space.maxkonkin.nasapicbot.model.User;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface Dao<T> {
 
     List<T> findAll();
 
-    User getById(long chatId);
+    Optional<User> getById(long chatId);
 
     void save(T t);
 
