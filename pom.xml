@@ -18,7 +18,7 @@
 		<lombok.version>1.18.30</lombok.version>
 		<telegrambots-spring-boot-starter.version>6.9.7.1</telegrambots-spring-boot-starter.version>
 		<snakeyaml.version>2.2</snakeyaml.version>
-		<logback.version>1.4.8</logback.version>
+		<logback.version>1.4.12</logback.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
