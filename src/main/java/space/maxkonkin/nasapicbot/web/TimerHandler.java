@@ -7,6 +7,8 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import space.maxkonkin.nasapicbot.config.SpringConfig;
 import space.maxkonkin.nasapicbot.model.TimerMessage;
+import space.maxkonkin.nasapicbot.model.User;
+import space.maxkonkin.nasapicbot.service.UserService;
 
 import java.io.IOException;
 import java.util.List;
@@ -20,20 +22,30 @@ public class TimerHandler implements Function<TimerMessage, String> {
         log.debug("Initializing Spring context...");
         ApplicationContext ctx = new AnnotationConfigApplicationContext(SpringConfig.class);
         log.debug("Done.");
+
+        log.debug("Instantiating userService...");
+        final UserService userService = ctx.getBean(UserService.class);
+        log.debug("Done.");
+
         log.debug("Instantiating bot...");
         final NASAPicOnSpringBot nasaPicOnSpringBot = ctx.getBean(NASAPicOnSpringBot.class);
         log.debug("Done.");
+
         final List<TimerMessage.Message> messages = timerMessage.getMessages();
         if (messages.size() > 1) throw new RuntimeException("Multiple messages not supported!");
         try {
             log.debug("Getting message payload...");
             final String payload = messages.getFirst().getDetails().getPayload();
             log.debug("Payload: " + payload);
-            final SendMessage sendMessage = nasaPicOnSpringBot.giveTodayPicture(Long.parseLong(payload));
-            nasaPicOnSpringBot.execute(sendMessage);
-            log.info("Message sent to chat_id=" + sendMessage.getChatId());
+            List<User> users = userService.findAll();
+            for (User user : users) {
+                final SendMessage sendMessage = nasaPicOnSpringBot.giveTodayPicture(user.getChatId());
+                nasaPicOnSpringBot.execute(sendMessage);
+                log.info("Message sent to chat_id=" + sendMessage.getChatId());
+                Thread.sleep(50);
+            }
             return "OK";
-        } catch (IOException | TelegramApiException e) {
+        } catch (IOException | TelegramApiException | InterruptedException e) {
             log.error(e.getMessage());
             return "ERROR";
         }

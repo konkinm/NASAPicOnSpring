@@ -28,7 +28,7 @@ public class TimerHandlerTest {
                 """;
         ObjectMapper mapper = new ObjectMapper();
         TimerHandler handler = new TimerHandler();
-        String message = handler.apply(mapper.readValue(MESSAGE, TimerMessage.class));
-        System.out.println("Message: " + mapper.writeValueAsString(message));
+        String status = handler.apply(mapper.readValue(MESSAGE, TimerMessage.class));
+        System.out.println("Status: " + mapper.writeValueAsString(status));
     }
 }
