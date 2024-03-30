@@ -10,7 +10,8 @@ import org.telegram.telegrambots.meta.api.methods.updates.SetWebhook;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import space.maxkonkin.nasapicbot.repository.UserDao;
+import space.maxkonkin.nasapicbot.service.NasaService;
+import space.maxkonkin.nasapicbot.service.TranslateService;
 import space.maxkonkin.nasapicbot.service.UserService;
 import space.maxkonkin.nasapicbot.web.NASAPicOnSpringBot;
 
@@ -27,11 +28,6 @@ public class SpringConfig {
     private List<BotCommand> listOfCommands = new ArrayList<>();
 
     @Bean
-    public UserService userService() {
-     return new UserService(new UserDao());
-    }
-
-    @Bean
     public SetWebhook setWebhook() {
         return SetWebhook.builder().url(telegramConfig.getWebhookPath()).build();
     }
@@ -42,8 +38,11 @@ public class SpringConfig {
     }
 
     @Bean
-    public NASAPicOnSpringBot springWebhookBot(SetWebhook setWebhook, String botToken) throws TelegramApiException {
-        NASAPicOnSpringBot bot = new NASAPicOnSpringBot(setWebhook, botToken);
+    public NASAPicOnSpringBot springWebhookBot(SetWebhook setWebhook, String botToken,
+                                               NasaService nasaService, TranslateService translateService,
+                                               UserService userService) throws TelegramApiException {
+        NASAPicOnSpringBot bot = new NASAPicOnSpringBot(setWebhook, botToken, nasaService, translateService,
+                userService);
 
         bot.setBotPath(telegramConfig.getBotPath());
         bot.setBotUsername(telegramConfig.getBotName());

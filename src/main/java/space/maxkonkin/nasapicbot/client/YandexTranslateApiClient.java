@@ -9,6 +9,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.springframework.stereotype.Component;
 import space.maxkonkin.nasapicbot.config.YandexTranslateApiConfig;
+import space.maxkonkin.nasapicbot.model.LangCode;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -24,12 +25,12 @@ public class YandexTranslateApiClient {
         this.config = config;
     }
 
-    public List<String> translate(List<String> inputTexts) throws IOException {
+    public List<String> translate(List<String> inputTexts, LangCode langCode) throws IOException {
         final HttpPost httpPost = new HttpPost(config.getAPI_BASE_URI());
         httpPost.setHeader("Content-type", "application/json");
         httpPost.setHeader("Authorization", config.getAPI_TOKEN());
 
-        final StringEntity entity = getStringEntity(inputTexts);
+        final StringEntity entity = getStringEntity(inputTexts, langCode);
         httpPost.setEntity(entity);
         List<JsonNode> textNodes;
         try (CloseableHttpClient client = HttpClients.createDefault();
@@ -41,7 +42,7 @@ public class YandexTranslateApiClient {
         return textNodes.stream().map(JsonNode::textValue).toList();
     }
 
-    private StringEntity getStringEntity(List<String> inputTexts) throws UnsupportedEncodingException {
+    private StringEntity getStringEntity(List<String> inputTexts, LangCode langCode) throws UnsupportedEncodingException {
         StringBuilder commaSeparatedTexts = new StringBuilder();
         for (String inputText : inputTexts) {
             String filteredInputText = inputText.replace("\"","\\\"");
@@ -53,7 +54,7 @@ public class YandexTranslateApiClient {
         final String json = "{\n" +
                 "    \"folderId\": \"" + config.getFOLDER_ID() + "\",\n" +
                 "    \"texts\": [" + commaSeparatedTexts + "],\n" +
-                "    \"targetLanguageCode\": \"ru\"\n" +
+                "    \"targetLanguageCode\": \"" + langCode.getCode() + "\"\n" +
                 "}";
 
         return new StringEntity(json);

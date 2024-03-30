@@ -11,8 +11,11 @@ import java.time.format.DateTimeFormatter;
 
 @Service
 public class NasaService {
-    @Autowired
-    private NasaApiClient nasaApiClient;
+    private final NasaApiClient nasaApiClient;
+
+    public NasaService(NasaApiClient nasaApiClient) {
+        this.nasaApiClient = nasaApiClient;
+    }
 
     public NasaObject getToday() {
         try {

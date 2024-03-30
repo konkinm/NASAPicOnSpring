@@ -3,6 +3,7 @@ package space.maxkonkin.nasapicbot.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import space.maxkonkin.nasapicbot.client.YandexTranslateApiClient;
+import space.maxkonkin.nasapicbot.model.LangCode;
 import space.maxkonkin.nasapicbot.model.NasaObject;
 
 import java.io.IOException;
@@ -13,14 +14,17 @@ import java.util.List;
 
 @Service
 public class TranslateService {
-    @Autowired
-    private YandexTranslateApiClient client;
+    private final YandexTranslateApiClient client;
 
-    public NasaObject translateTitleAndExplanation(NasaObject input) throws IOException {
+    public TranslateService(YandexTranslateApiClient client) {
+        this.client = client;
+    }
+
+    public NasaObject translateTitleAndExplanation(NasaObject input, LangCode langCode) throws IOException {
         String title = input.title();
         String explanation = input.explanation();
         List<String> translatedTexts = client
-                .translate(new ArrayList<>(Arrays.asList(title, explanation)));
+                .translate(new ArrayList<>(Arrays.asList(title, explanation)), langCode);
         String translatedTitle = "";
         String translatedExplanation = "";
         if (!translatedTexts.isEmpty()) {

@@ -28,7 +28,6 @@ public class EntityManager {
     public void execute(String query, Params params, Consumer<DataQueryResult> callback) {
         logger.debug("Authentication via environ...");
         AuthProvider authProvider = CloudAuthHelper.getAuthProviderFromEnviron();
-//        AuthProvider authProvider = new TokenAuthProvider(System.getenv("YDB_ACCESS_TOKEN_CREDENTIALS"));
 
         logger.debug("Creating GrpcTransport...");
         try (GrpcTransport transport = GrpcTransport.forEndpoint(endpoint, database)
@@ -62,5 +61,4 @@ public class EntityManager {
     public void execute(String query, Params params) {
         execute(query, params, null);
     }
-
 }
