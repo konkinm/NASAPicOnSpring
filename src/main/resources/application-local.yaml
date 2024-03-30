@@ -2,14 +2,14 @@ telegram:
   api-url: "https://api.telegram.org/"
   bot-name: "NASAPic_bot"
   bot-token: "${BOT_TOKEN}"
-  webhook-path: "https://d5dob1n2uv2ss0qvgb76.apigw.yandexcloud.net"
+  webhook-path: "https://5d67-178-134-101-193.ngrok-free.app"
   bot-path: ""
 server:
   port: "80"
 message:
   errorText:
     text: "Команда не поддерживается."
-translate: false
+translate: true #global translate option
 yandex-api:
   api-url: "https://translate.api.cloud.yandex.net/translate/v2/translate"
   folder-id: "b1gh84dl01a0jkghcf9b"
@@ -20,7 +20,7 @@ apod:
 logging:
   level:
     root: INFO
-    org.springframework: ERROR
-    space.maxkonkin.nasapicbot: ERROR
+    org.springframework: DEBUG
+    space.maxkonkin.nasapicbot: DEBUG
   pattern:
     console: "%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"

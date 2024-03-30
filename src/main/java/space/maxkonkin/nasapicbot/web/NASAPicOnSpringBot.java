@@ -11,9 +11,13 @@ import org.telegram.telegrambots.meta.api.methods.updates.SetWebhook;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.starter.SpringWebhookBot;
+import space.maxkonkin.nasapicbot.exception.UserNotFoundException;
+import space.maxkonkin.nasapicbot.model.LangCode;
 import space.maxkonkin.nasapicbot.model.NasaObject;
+import space.maxkonkin.nasapicbot.model.User;
 import space.maxkonkin.nasapicbot.service.NasaService;
 import space.maxkonkin.nasapicbot.service.TranslateService;
+import space.maxkonkin.nasapicbot.service.UserService;
 import space.maxkonkin.nasapicbot.util.NasaObjectUtil;
 
 import java.io.IOException;
@@ -34,20 +38,22 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
             Либо введи дату в формате <b>YYYY-MM-DD</b> и я пришлю ссылку на картинку с описанием, опубликованную в тот день.
             Дата должна быть не раньше 1995-06-20!
             Напоминаю, что картинки на сайте NASA обновляются раз в сутки""";
-    public static long chat_id;
     String botPath;
     String botUsername;
     String errorText;
     Boolean withTranslate;
 
-    @Autowired
-    NasaService nasaService;
+    private final NasaService nasaService;
 
-    @Autowired
-    TranslateService translateService;
+    private final TranslateService translateService;
 
-    public NASAPicOnSpringBot(SetWebhook setWebhook, String botToken) {
+    private final UserService userService;
+
+    public NASAPicOnSpringBot(SetWebhook setWebhook, String botToken, NasaService nasaService, TranslateService translateService, UserService userService) {
         super(setWebhook, botToken);
+        this.nasaService = nasaService;
+        this.translateService = translateService;
+        this.userService = userService;
     }
 
     @Override
@@ -64,7 +70,14 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
         if (!update.hasCallbackQuery()) {
             if (update.hasMessage()) {
                 Message message = update.getMessage();
-                chat_id = message.getChatId();
+                long chat_id = message.getChatId();
+
+                var tgUser = message.getFrom();
+                var newUser = new User(chat_id, tgUser.getUserName(), false, LangCode.EN);
+                userService.saveNew(newUser);
+                User user = userService.getById(chat_id).orElseThrow(() ->
+                        new UserNotFoundException("user with chat_id=" + chat_id + " not found"));
+
                 String text = message.getText();
                 final String regex = "\\d{4}-\\d{2}-\\d{2}";
                 final Pattern pattern = Pattern.compile(regex);
@@ -76,7 +89,7 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
                         LocalDate date = LocalDate.parse(fromRegex, DateTimeFormatter.ISO_LOCAL_DATE);
                         if (!date.isBefore(LocalDate.of(1995, 6, 20)) &&
                                 !date.isAfter(LocalDate.now())) {
-                            return givePostedOnDatePicture(date);
+                            return givePostedOnDatePicture(date, user);
                         } else {
                             return sendMessage("Введённая дата должна быть не раньше 1995-06-20 и не позже сегодняшней даты", chat_id);
                         }
@@ -90,13 +103,13 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
                             return sendMessage(HELP_TEXT, chat_id);
                         }
                         case "/give" -> {
-                            return giveTodayPicture(chat_id);
+                            return giveTodayPicture(user);
                         }
                         case "/random" -> {
-                            return giveRandomPicture(chat_id);
+                            return giveRandomPicture(user);
                         }
                         default -> {
-                            return sendMessage("Команда не поддерживается", chat_id);
+                            return sendMessage(errorText, chat_id);
                         }
                     }
                 }
@@ -105,33 +118,33 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
         return null;
     }
 
-    private SendMessage giveRandomPicture(long chat_id) throws IOException {
+    private SendMessage giveRandomPicture(User user) throws IOException {
         NasaObject random = nasaService.getRandom();
         assert random != null;
-        if (withTranslate) {
-            return sendTranslatedAndFormattedMessage(random, chat_id);
+        if (withTranslate && user.getTranslateLangCode() != LangCode.EN) {
+            return sendTranslatedAndFormattedMessage(random, user);
         } else {
-            return sendFormattedMessage(random, chat_id);
+            return sendFormattedMessage(random, user.getChatId());
         }
     }
 
-    public SendMessage giveTodayPicture(long chat_id) throws IOException {
+    public SendMessage giveTodayPicture(User user) throws IOException {
         NasaObject today = nasaService.getToday();
         assert today != null;
-        if (withTranslate) {
-            return sendTranslatedAndFormattedMessage(today, chat_id);
+        if (withTranslate && user.getTranslateLangCode() != LangCode.EN) {
+            return sendTranslatedAndFormattedMessage(today, user);
         } else {
-            return sendFormattedMessage(today, chat_id);
+            return sendFormattedMessage(today, user.getChatId());
         }
     }
 
-    private SendMessage givePostedOnDatePicture(LocalDate date) throws IOException {
+    private SendMessage givePostedOnDatePicture(LocalDate date, User user) throws IOException {
         NasaObject onDate = nasaService.getOnDate(date);
         assert onDate != null;
-        if (withTranslate) {
-            return sendTranslatedAndFormattedMessage(onDate, chat_id);
+        if (withTranslate && user.getTranslateLangCode() != LangCode.EN) {
+            return sendTranslatedAndFormattedMessage(onDate, user);
         } else {
-            return sendFormattedMessage(onDate, chat_id);
+            return sendFormattedMessage(onDate, user.getChatId());
         }
     }
 
@@ -139,9 +152,9 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
         return sendMessage(NasaObjectUtil.getFormattedMessage(nasaObject), chat_id);
     }
 
-    private SendMessage sendTranslatedAndFormattedMessage(NasaObject nasaObject, long chat_id) throws IOException {
-        NasaObject translated = translateService.translateTitleAndExplanation(nasaObject);
-        return sendMessage(NasaObjectUtil.getFormattedMessage(translated), chat_id);
+    private SendMessage sendTranslatedAndFormattedMessage(NasaObject nasaObject, User user) throws IOException {
+        NasaObject translated = translateService.translateTitleAndExplanation(nasaObject, user.getTranslateLangCode());
+        return sendMessage(NasaObjectUtil.getFormattedMessage(translated), user.getChatId());
     }
 
     private SendMessage sendMessage(String messageText, long chat_id) {

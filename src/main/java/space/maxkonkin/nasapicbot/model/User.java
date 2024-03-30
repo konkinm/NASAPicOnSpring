@@ -6,9 +6,9 @@ public class User {
     private Long chatId;
     private String name;
     private Boolean isScheduled;
-    private String translateLangCode;
+    private LangCode translateLangCode;
 
-    public User(long chatId, String name, boolean isScheduled, String translateLangCode) {
+    public User(Long chatId, String name, boolean isScheduled, LangCode translateLangCode) {
         this.name = name;
         this.chatId = chatId;
         this.isScheduled = isScheduled;
@@ -24,7 +24,7 @@ public class User {
         this.name = name;
     }
 
-    public long getChatId() {
+    public Long getChatId() {
         return chatId;
     }
 
@@ -40,11 +40,11 @@ public class User {
         isScheduled = scheduled;
     }
 
-    public String getTranslateLangCode() {
+    public LangCode getTranslateLangCode() {
         return translateLangCode;
     }
 
-    public void setTranslateLangCode(String translateLangCode) {
+    public void setTranslateLangCode(LangCode translateLangCode) {
         this.translateLangCode = translateLangCode;
     }
 
@@ -62,7 +62,7 @@ public class User {
         var chatId = resultSet.getColumn("chat_id").getUint64();
         var name = resultSet.getColumn("name").getText();
         var isScheduled = resultSet.getColumn("is_scheduled").getBool();
-        var translateLangCode = resultSet.getColumn("translate_lang_code").getText();
+        var translateLangCode = LangCode.valueOf(resultSet.getColumn("translate_lang_code").getText().toUpperCase());
         return new User(chatId, name, isScheduled, translateLangCode);
     }
 }
