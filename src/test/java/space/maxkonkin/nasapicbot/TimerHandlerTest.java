@@ -5,8 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import space.maxkonkin.nasapicbot.model.TimerMessage;
 import space.maxkonkin.nasapicbot.web.TimerHandler;
 
+import java.io.IOException;
+
 public class TimerHandlerTest {
-    public static void main(String[] args) throws JsonProcessingException {
+    public static void main(String[] args) throws IOException {
         final String MESSAGE = """
                             {
                               "messages": [

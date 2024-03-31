@@ -1,10 +1,10 @@
-package space.maxkonkin.nasapicbot.model;
+package space.maxkonkin.nasapicbot.to;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record NasaObject(String credit, String copyright, String date, String explanation, String hdUrl,
-                         String mediaType, String serviceVersion, String title, String url) {
-    public NasaObject(
+public record NasaTo(String credit, String copyright, String date, String explanation, String hdUrl,
+                     String mediaType, String serviceVersion, String title, String url) {
+    public NasaTo(
             @JsonProperty("credit") String credit,
             @JsonProperty("copyright") String copyright,
             @JsonProperty("date") String date,
