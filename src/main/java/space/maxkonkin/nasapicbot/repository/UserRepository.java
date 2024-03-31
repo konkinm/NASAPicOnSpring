@@ -1,6 +1,7 @@
 package space.maxkonkin.nasapicbot.repository;
 
 
+import org.springframework.stereotype.Repository;
 import space.maxkonkin.nasapicbot.model.User;
 import space.maxkonkin.nasapicbot.util.ThrowingConsumer;
 import tech.ydb.table.query.Params;
@@ -11,8 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@org.springframework.stereotype.Repository
-public class UserRepository implements Repository<User> {
+@Repository
+public class UserRepository implements space.maxkonkin.nasapicbot.repository.Repository<User> {
     private final EntityManager entityManager = new EntityManager(System.getenv("DATABASE"), System.getenv("ENDPOINT"));
 
     @Override

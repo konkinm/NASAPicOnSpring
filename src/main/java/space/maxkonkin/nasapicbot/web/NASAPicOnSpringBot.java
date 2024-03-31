@@ -4,7 +4,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updates.SetWebhook;
@@ -13,19 +12,18 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.starter.SpringWebhookBot;
 import space.maxkonkin.nasapicbot.exception.UserNotFoundException;
 import space.maxkonkin.nasapicbot.model.LangCode;
-import space.maxkonkin.nasapicbot.model.NasaObject;
+import space.maxkonkin.nasapicbot.to.NasaTo;
 import space.maxkonkin.nasapicbot.model.User;
 import space.maxkonkin.nasapicbot.service.NasaService;
 import space.maxkonkin.nasapicbot.service.TranslateService;
 import space.maxkonkin.nasapicbot.service.UserService;
-import space.maxkonkin.nasapicbot.util.NasaObjectUtil;
+import space.maxkonkin.nasapicbot.util.NasaUtil;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 
 @Getter
 @Setter
@@ -41,7 +39,6 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
     String botPath;
     String botUsername;
     String errorText;
-    Boolean withTranslate;
 
     private final NasaService nasaService;
 
@@ -102,7 +99,7 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
                         case "/start", "/help" -> {
                             return sendMessage(HELP_TEXT, chat_id);
                         }
-                        case "/give" -> {
+                        case "/today" -> {
                             return giveTodayPicture(user);
                         }
                         case "/random" -> {
@@ -119,42 +116,25 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
     }
 
     private SendMessage giveRandomPicture(User user) throws IOException {
-        NasaObject random = nasaService.getRandom();
+        NasaTo random = nasaService.getRandom(user);
         assert random != null;
-        if (withTranslate && user.getTranslateLangCode() != LangCode.EN) {
-            return sendTranslatedAndFormattedMessage(random, user);
-        } else {
-            return sendFormattedMessage(random, user.getChatId());
-        }
+        return sendFormattedMessage(random, user.getChatId());
     }
 
     public SendMessage giveTodayPicture(User user) throws IOException {
-        NasaObject today = nasaService.getToday();
+        NasaTo today = nasaService.getToday(user);
         assert today != null;
-        if (withTranslate && user.getTranslateLangCode() != LangCode.EN) {
-            return sendTranslatedAndFormattedMessage(today, user);
-        } else {
-            return sendFormattedMessage(today, user.getChatId());
-        }
+        return sendFormattedMessage(today, user.getChatId());
     }
 
     private SendMessage givePostedOnDatePicture(LocalDate date, User user) throws IOException {
-        NasaObject onDate = nasaService.getOnDate(date);
+        NasaTo onDate = nasaService.getOnDate(date, user);
         assert onDate != null;
-        if (withTranslate && user.getTranslateLangCode() != LangCode.EN) {
-            return sendTranslatedAndFormattedMessage(onDate, user);
-        } else {
-            return sendFormattedMessage(onDate, user.getChatId());
-        }
+        return sendFormattedMessage(onDate, user.getChatId());
     }
 
-    private SendMessage sendFormattedMessage(NasaObject nasaObject, long chat_id) {
-        return sendMessage(NasaObjectUtil.getFormattedMessage(nasaObject), chat_id);
-    }
-
-    private SendMessage sendTranslatedAndFormattedMessage(NasaObject nasaObject, User user) throws IOException {
-        NasaObject translated = translateService.translateTitleAndExplanation(nasaObject, user.getTranslateLangCode());
-        return sendMessage(NasaObjectUtil.getFormattedMessage(translated), user.getChatId());
+    private SendMessage sendFormattedMessage(NasaTo nasaTo, long chat_id) {
+        return sendMessage(NasaUtil.getFormattedMessage(nasaTo), chat_id);
     }
 
     private SendMessage sendMessage(String messageText, long chat_id) {

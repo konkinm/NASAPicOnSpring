@@ -6,9 +6,11 @@ import lombok.extern.slf4j.Slf4j;
 import space.maxkonkin.nasapicbot.model.QueueMessage;
 import space.maxkonkin.nasapicbot.web.Handler;
 
+import java.io.IOException;
+
 @Slf4j
 public class HandlerTest {
-    public static void main(String[] args) throws JsonProcessingException {
+    public static void main(String[] args) throws IOException {
         final String MESSAGE = """
                 {
                   "messages": [
@@ -18,7 +20,7 @@ public class HandlerTest {
                         "message": {
                           "message_id": "2b073a97-a8f635fd-5cd5606b-6811fc75",
                           "md5_of_body": "227d53eaa080cc3bad424a352fd37563",
-                          "body": "{\\"update_id\\":10281888,\\n\\"message\\":{\\"message_id\\":252,\\"from\\":{\\"id\\":229590625,\\"is_bot\\":false,\\"first_name\\":\\"Max\\",\\"username\\":\\"Mfx_m\\",\\"language_code\\":\\"en\\"},\\"chat\\":{\\"id\\":229590625,\\"first_name\\":\\"Max\\",\\"username\\":\\"Mfx_m\\",\\"type\\":\\"private\\"},\\"date\\":1695296606,\\"text\\":\\"/random\\",\\"entities\\":[{\\"offset\\":0,\\"length\\":6,\\"type\\":\\"bot_command\\"}]}}",
+                          "body": "{\\"update_id\\":10281888,\\n\\"message\\":{\\"message_id\\":252,\\"from\\":{\\"id\\":229590625,\\"is_bot\\":false,\\"first_name\\":\\"Max\\",\\"username\\":\\"Mfx_m\\",\\"language_code\\":\\"en\\"},\\"chat\\":{\\"id\\":229590625,\\"first_name\\":\\"Max\\",\\"username\\":\\"Mfx_m\\",\\"type\\":\\"private\\"},\\"date\\":1695296606,\\"text\\":\\"/today\\",\\"entities\\":[{\\"offset\\":0,\\"length\\":6,\\"type\\":\\"bot_command\\"}]}}",
                           "attributes": {
                             "ApproximateFirstReceiveTimestamp": "1695296607678",
                             "ApproximateReceiveCount": "1",

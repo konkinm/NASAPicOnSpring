@@ -15,7 +15,7 @@ import java.util.Objects;
 import java.util.Properties;
 
 @Configuration
-@PropertySource(value = "classpath:application-${SPRING_PROFILE}.yaml", factory = TelegramConfig.YamlPropertySourceFactory.class)
+@PropertySource(value = "classpath:application-${SPRING_PROFILE}.yaml", factory = YamlPropertySourceFactory.class)
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class TelegramConfig {
@@ -29,19 +29,4 @@ public class TelegramConfig {
     String botName;
     @Value("${message.errorText.text}")
     String errorText;
-    @Value("${translate}")
-    Boolean withTranslate;
-
-    protected static class YamlPropertySourceFactory implements PropertySourceFactory {
-
-        @Override
-        public org.springframework.core.env.PropertySource<?> createPropertySource(String name, EncodedResource encodedResource) {
-            YamlPropertiesFactoryBean factory = new YamlPropertiesFactoryBean();
-            factory.setResources(encodedResource.getResource());
-            Properties properties = factory.getObject();
-            assert properties != null;
-            return new PropertiesPropertySource(Objects.requireNonNull(
-                    encodedResource.getResource().getFilename()), properties);
-        }
-    }
 }

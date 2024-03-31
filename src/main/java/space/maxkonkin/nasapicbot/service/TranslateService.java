@@ -1,10 +1,9 @@
 package space.maxkonkin.nasapicbot.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import space.maxkonkin.nasapicbot.client.YandexTranslateApiClient;
 import space.maxkonkin.nasapicbot.model.LangCode;
-import space.maxkonkin.nasapicbot.model.NasaObject;
+import space.maxkonkin.nasapicbot.to.NasaTo;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,7 +19,7 @@ public class TranslateService {
         this.client = client;
     }
 
-    public NasaObject translateTitleAndExplanation(NasaObject input, LangCode langCode) throws IOException {
+    public NasaTo translateTitleAndExplanation(NasaTo input, LangCode langCode) throws IOException {
         String title = input.title();
         String explanation = input.explanation();
         List<String> translatedTexts = client
@@ -38,7 +37,7 @@ public class TranslateService {
         } else {
             System.err.println("'transletedTexts' is empty!");
         }
-        return new NasaObject(input.credit(), input.copyright(), input.date(), translatedExplanation,
+        return new NasaTo(input.credit(), input.copyright(), input.date(), translatedExplanation,
                 input.hdUrl(), input.mediaType(), input.serviceVersion(), translatedTitle, input.url());
     }
 }
