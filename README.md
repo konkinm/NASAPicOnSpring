@@ -71,7 +71,7 @@ info:
   title: Bot API
   version: 1.0.0
 servers:
-- url: https://d5dob1n2uv2ss0qvgb76.apigw.yandexcloud.net
+- url: <apigw_url>
 paths:
 
   /callback:
