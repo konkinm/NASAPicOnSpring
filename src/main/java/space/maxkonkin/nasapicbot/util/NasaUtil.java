@@ -1,5 +1,6 @@
 package space.maxkonkin.nasapicbot.util;
 
+import com.amazonaws.services.dynamodbv2.document.Item;
 import lombok.experimental.UtilityClass;
 import space.maxkonkin.nasapicbot.model.LangCode;
 import space.maxkonkin.nasapicbot.model.Nasa;
@@ -40,5 +41,18 @@ public class NasaUtil {
                 .append(")\n\n")
                 .append(nasaTo.explanation());
         return message.toString();
+    }
+
+    public static Nasa fromItem(Item item) {
+        return new Nasa(LangCode.valueOf(item.getString("lang").toUpperCase()),
+                item.getString("credit"),
+                item.getString("copyright"),
+                item.getString("date"),
+                item.getString("explanation"),
+                item.getString("media_type"),
+                item.getString("service_version"),
+                item.getString("hd_url"),
+                item.getString("title"),
+                item.getString("url"));
     }
 }

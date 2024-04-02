@@ -19,7 +19,7 @@ apod:
 ddb:
   service-endpoint: "https://docapi.serverless.yandexcloud.net/ru-central1/b1gkclasvcpkk5ilt8pp/etncvkhal7tnarjdpfj6"
   signing-region: "ru-central1"
-  table: "nasapic_cache"
+  table: "nasapic_storage"
 
 logging:
   level:
