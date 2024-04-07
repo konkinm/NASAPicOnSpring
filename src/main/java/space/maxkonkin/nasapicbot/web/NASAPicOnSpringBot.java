@@ -12,11 +12,11 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.starter.SpringWebhookBot;
 import space.maxkonkin.nasapicbot.exception.UserNotFoundException;
 import space.maxkonkin.nasapicbot.model.LangCode;
-import space.maxkonkin.nasapicbot.to.NasaTo;
 import space.maxkonkin.nasapicbot.model.User;
 import space.maxkonkin.nasapicbot.service.NasaService;
 import space.maxkonkin.nasapicbot.service.TranslateService;
 import space.maxkonkin.nasapicbot.service.UserService;
+import space.maxkonkin.nasapicbot.to.NasaTo;
 import space.maxkonkin.nasapicbot.util.NasaUtil;
 
 import java.io.IOException;
