@@ -17,10 +17,10 @@ import java.util.Optional;
 
 @Repository
 @Slf4j
-public class NasaRepository {
+public class NasaDynamoDbRepository {
     private final DynamoDbTableClient client;
 
-    public NasaRepository(DynamoDbTableClient client) {
+    public NasaDynamoDbRepository(DynamoDbTableClient client) {
         this.client = client;
     }
 

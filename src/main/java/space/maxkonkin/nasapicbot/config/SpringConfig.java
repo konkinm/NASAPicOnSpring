@@ -9,7 +9,7 @@ import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import space.maxkonkin.nasapicbot.client.NasaApiClient;
-import space.maxkonkin.nasapicbot.repository.NasaRepository;
+import space.maxkonkin.nasapicbot.repository.NasaDynamoDbRepository;
 import space.maxkonkin.nasapicbot.service.NasaService;
 import space.maxkonkin.nasapicbot.service.TranslateService;
 import space.maxkonkin.nasapicbot.service.UserService;
@@ -64,7 +64,7 @@ public class SpringConfig {
     }
 
     @Bean
-    public NasaService nasaService(NasaApiClient nasaApiClient, NasaRepository nasaRepository, TranslateService translateService) {
+    public NasaService nasaService(NasaApiClient nasaApiClient, NasaDynamoDbRepository nasaRepository, TranslateService translateService) {
         NasaService service = new NasaService(nasaApiClient, nasaRepository, translateService);
         service.setWithTranslate(withTranslate);
         return service;

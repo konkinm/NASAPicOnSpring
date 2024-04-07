@@ -7,7 +7,7 @@ import space.maxkonkin.nasapicbot.client.NasaApiClient;
 import space.maxkonkin.nasapicbot.model.LangCode;
 import space.maxkonkin.nasapicbot.model.Nasa;
 import space.maxkonkin.nasapicbot.model.User;
-import space.maxkonkin.nasapicbot.repository.NasaRepository;
+import space.maxkonkin.nasapicbot.repository.NasaDynamoDbRepository;
 import space.maxkonkin.nasapicbot.to.NasaTo;
 import space.maxkonkin.nasapicbot.util.NasaUtil;
 
@@ -23,10 +23,10 @@ public class NasaService {
     Boolean withTranslate;
 
     private final NasaApiClient nasaApiClient;
-    private final NasaRepository nasaRepository;
+    private final NasaDynamoDbRepository nasaRepository;
     private final TranslateService translateService;
 
-    public NasaService(NasaApiClient nasaApiClient, NasaRepository nasaRepository, TranslateService translateService) {
+    public NasaService(NasaApiClient nasaApiClient, NasaDynamoDbRepository nasaRepository, TranslateService translateService) {
         this.nasaApiClient = nasaApiClient;
         this.nasaRepository = nasaRepository;
         this.translateService = translateService;
