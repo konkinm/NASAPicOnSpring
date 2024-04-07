@@ -1,7 +1,5 @@
 package space.maxkonkin.nasapicbot.repository;
 
-import space.maxkonkin.nasapicbot.model.User;
-
 import java.util.List;
 import java.util.Optional;
 
