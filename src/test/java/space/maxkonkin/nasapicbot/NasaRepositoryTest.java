@@ -7,7 +7,7 @@ import space.maxkonkin.nasapicbot.config.SpringConfig;
 import space.maxkonkin.nasapicbot.model.LangCode;
 import space.maxkonkin.nasapicbot.model.Nasa;
 import space.maxkonkin.nasapicbot.model.User;
-import space.maxkonkin.nasapicbot.repository.NasaRepository;
+import space.maxkonkin.nasapicbot.repository.NasaDynamoDbRepository;
 import space.maxkonkin.nasapicbot.service.NasaService;
 import space.maxkonkin.nasapicbot.util.NasaUtil;
 
@@ -20,7 +20,7 @@ public class NasaRepositoryTest {
         log.debug("Initializing Spring context...");
         ApplicationContext ctx = new AnnotationConfigApplicationContext(SpringConfig.class);
         log.debug("Done.");
-        NasaRepository nasaRepository = ctx.getBean(NasaRepository.class);
+        NasaDynamoDbRepository nasaRepository = ctx.getBean(NasaDynamoDbRepository.class);
         NasaService nasaService = ctx.getBean(NasaService.class);
         Nasa nasa = NasaUtil.fromTo(nasaService.getOnDate(LocalDate.of(2020, 1,1), new User(null, null, false, LangCode.EN)), LangCode.EN);
         nasaRepository.save(nasa);
