@@ -16,9 +16,6 @@ yandex-api:
   api-token: "${YA_API_TOKEN}"
 apod:
   api-url: "https://apod.ellanan.com/api"
-ddb:
-  service-endpoint: "https://docapi.serverless.yandexcloud.net/ru-central1/b1gkclasvcpkk5ilt8pp/etncvkhal7tnarjdpfj6"
-  signing-region: "ru-central1"
 
 logging:
   level:
