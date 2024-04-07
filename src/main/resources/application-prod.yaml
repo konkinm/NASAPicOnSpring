@@ -9,16 +9,13 @@ server:
 message:
   errorText:
     text: "Команда не поддерживается."
-translate: false
+translate: true #global translate option
 yandex-api:
   api-url: "https://translate.api.cloud.yandex.net/translate/v2/translate"
   folder-id: "b1gh84dl01a0jkghcf9b"
   api-token: "${YA_API_TOKEN}"
 apod:
   api-url: "https://apod.ellanan.com/api"
-ddb:
-  service-endpoint: "https://docapi.serverless.yandexcloud.net/ru-central1/b1gkclasvcpkk5ilt8pp/etncvkhal7tnarjdpfj6"
-  signing-region: "ru-central1"
 
 logging:
   level:
