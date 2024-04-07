@@ -1,20 +1,22 @@
 package space.maxkonkin.nasapicbot.util;
 
-import com.amazonaws.services.dynamodbv2.document.Item;
 import lombok.experimental.UtilityClass;
 import space.maxkonkin.nasapicbot.model.LangCode;
 import space.maxkonkin.nasapicbot.model.Nasa;
 import space.maxkonkin.nasapicbot.to.NasaTo;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 @UtilityClass
 public class NasaUtil {
     public static Nasa fromTo(NasaTo to, LangCode langCode) {
-        return new Nasa(langCode, to.credit(), to.copyright(), to.date(), to.explanation(), to.hdUrl(),
+        return new Nasa(langCode, to.credit(), to.copyright(), LocalDate.parse(to.date(), DateTimeFormatter.ISO_LOCAL_DATE), to.explanation(), to.hdUrl(),
                 to.mediaType(), to.serviceVersion(), to.title(), to.url());
     }
 
     public static NasaTo getTo(Nasa nasa) {
-        return new NasaTo(nasa.getCredit(), nasa.getCopyright(), nasa.getDate(), nasa.getExplanation(), nasa.getHdUrl(),
+        return new NasaTo(nasa.getCredit(), nasa.getCopyright(), nasa.getDate().format(DateTimeFormatter.ISO_LOCAL_DATE), nasa.getExplanation(), nasa.getHdUrl(),
                 nasa.getMediaType(), nasa.getServiceVersion(), nasa.getTitle(), nasa.getUrl());
     }
 
@@ -43,16 +45,4 @@ public class NasaUtil {
         return message.toString();
     }
 
-    public static Nasa fromItem(Item item) {
-        return new Nasa(LangCode.valueOf(item.getString("lang").toUpperCase()),
-                item.getString("credit"),
-                item.getString("copyright"),
-                item.getString("date"),
-                item.getString("explanation"),
-                item.getString("media_type"),
-                item.getString("service_version"),
-                item.getString("hd_url"),
-                item.getString("title"),
-                item.getString("url"));
-    }
 }

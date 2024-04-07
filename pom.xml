@@ -19,7 +19,6 @@
 		<telegrambots-spring-boot-starter.version>6.9.7.1</telegrambots-spring-boot-starter.version>
 		<snakeyaml.version>2.2</snakeyaml.version>
 		<logback.version>1.4.12</logback.version>
-		<aws-java-sdk-dynamodb.version>1.11.1012</aws-java-sdk-dynamodb.version>
 		<jackson-databind.version>2.6.7</jackson-databind.version>
 		<jackson-core.version>2.6.7</jackson-core.version>
 		<jackson-annotations.version>2.16.1</jackson-annotations.version>
@@ -85,13 +84,6 @@
 			<groupId>tech.ydb</groupId>
 			<artifactId>ydb-auth-api</artifactId>
 			<version>1.0.0</version>
-		</dependency>
-
-		<!--AWS SDK DYNAMODB-->
-		<dependency>
-			<groupId>com.amazonaws</groupId>
-			<artifactId>aws-java-sdk-dynamodb</artifactId>
-			<version>${aws-java-sdk-dynamodb.version}</version>
 		</dependency>
 
 		<!--JACKSON-->

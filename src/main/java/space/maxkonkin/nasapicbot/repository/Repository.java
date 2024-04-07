@@ -9,7 +9,7 @@ public interface Repository<T> {
 
     List<T> getAll();
 
-    Optional<User> getById(long id);
+    Optional<T> getById(long id);
 
     void save(T t);
 
