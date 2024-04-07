@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import tech.ydb.table.result.ResultSetReader;
+
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -19,7 +22,7 @@ public class Nasa {
     private String copyright;
 
     @JsonProperty("date")
-    private String date;
+    private LocalDate date;
 
     @JsonProperty("explanation")
     private String explanation;
@@ -39,7 +42,7 @@ public class Nasa {
     @JsonProperty("url")
     private String url;
 
-    public Nasa(LangCode langCode, String credit, String copyright, String date, String explanation,
+    public Nasa(LangCode langCode, String credit, String copyright, LocalDate date, String explanation,
                 String hdUrl, String mediaType, String serviceVersion, String title, String url) {
         this.langCode = langCode;
         this.credit = credit;
@@ -51,6 +54,19 @@ public class Nasa {
         this.serviceVersion = serviceVersion;
         this.title = title;
         this.url = url;
+    }
+
+    public static Nasa fromResultSet(ResultSetReader resultSet) {
+        var date = resultSet.getColumn("date").getDate();
+        var langCode = LangCode.valueOf(resultSet.getColumn("lang").getText().toUpperCase());
+        var credit = resultSet.getColumn("credit").getText();
+        var copyright = resultSet.getColumn("copyright").getText();
+        var explanation = resultSet.getColumn("explanation").getText();
+        var title = resultSet.getColumn("title").getText();
+        var url = resultSet.getColumn("url").getText();
+        var hdUrl = resultSet.getColumn("hd_url").getText();
+        var mediaType = resultSet.getColumn("media_type").getText();
+        return new Nasa(langCode, credit, copyright, date, explanation, hdUrl, mediaType, "v1", title, url);
     }
 
     @Override
