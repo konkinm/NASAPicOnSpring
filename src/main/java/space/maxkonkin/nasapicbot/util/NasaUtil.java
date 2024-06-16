@@ -23,6 +23,7 @@ public class NasaUtil {
     public static String getFormattedMessage(NasaTo nasaTo) {
         String url = nasaTo.url();
         String hdUrl = nasaTo.hdUrl();
+        String mediaType = nasaTo.mediaType();
         StringBuilder message = new StringBuilder();
         message.append("<a href=\"")
                 .append(url)
@@ -31,7 +32,7 @@ public class NasaUtil {
                 .append(nasaTo.title())
                 .append("</b>")
                 .append("</a>");
-        if (!url.equalsIgnoreCase(hdUrl)) {
+        if (!url.equalsIgnoreCase(hdUrl) && !mediaType.equalsIgnoreCase("video")) {
             message.append(" | <a href=\"")
                     .append(hdUrl)
                     .append("\">")
