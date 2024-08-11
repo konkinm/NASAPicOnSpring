@@ -30,10 +30,10 @@ public class Handler implements Function<QueueMessage, String> {
         try {
             log.debug("Getting message body...");
             final Update update = mapper.readValue(messages.getFirst().getDetails().getMessage().getBody(), Update.class);
-            log.debug("Update: " + mapper.writeValueAsString(update));
+            log.debug("Update: {}", mapper.writeValueAsString(update));
             final SendMessage sendMessage = nasaPicOnSpringBot.handleUpdate(update);
             nasaPicOnSpringBot.execute(sendMessage);
-            log.info("Message sent to chat_id=" + sendMessage.getChatId());
+            log.info("Message sent to chat_id={}", sendMessage.getChatId());
             return "OK";
         } catch (IOException | TelegramApiException e) {
             log.error(e.getMessage());

@@ -36,13 +36,13 @@ public class TimerHandler implements Function<TimerMessage, String> {
         try {
             log.debug("Getting message payload...");
             final String payload = messages.getFirst().getDetails().getPayload();
-            log.debug("Payload: " + payload);
+            log.debug("Payload: {}", payload);
             List<User> users = userService.getAll();
             for (User user : users) {
                 if (user.isScheduled()) {
                     final SendMessage sendMessage = nasaPicOnSpringBot.giveTodayPicture(user);
                     nasaPicOnSpringBot.execute(sendMessage);
-                    log.info("Message sent to chat_id=" + sendMessage.getChatId());
+                    log.info("Message sent to chat_id={}", sendMessage.getChatId());
                     Thread.sleep(50);
                 }
             }

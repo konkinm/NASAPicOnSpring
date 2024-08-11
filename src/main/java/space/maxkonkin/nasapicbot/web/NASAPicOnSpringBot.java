@@ -115,7 +115,7 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
         return null;
     }
 
-    private SendMessage giveRandomPicture(User user) throws IOException {
+    private SendMessage giveRandomPicture(User user) {
         NasaTo random = nasaService.getRandom(user);
         assert random != null;
         return sendFormattedMessage(random, user.getChatId());
@@ -127,7 +127,7 @@ public class NASAPicOnSpringBot extends SpringWebhookBot {
         return sendFormattedMessage(today, user.getChatId());
     }
 
-    private SendMessage givePostedOnDatePicture(LocalDate date, User user) throws IOException {
+    private SendMessage givePostedOnDatePicture(LocalDate date, User user) {
         NasaTo onDate = nasaService.getOnDate(date, user);
         assert onDate != null;
         return sendFormattedMessage(onDate, user.getChatId());
