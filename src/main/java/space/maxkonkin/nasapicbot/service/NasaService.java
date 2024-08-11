@@ -19,12 +19,11 @@ import java.util.Optional;
 @Service
 @Slf4j
 public class NasaService {
-    @Setter
-    Boolean withTranslate;
-
     private final NasaApiClient nasaApiClient;
     private final NasaRowTableRepository nasaRepository;
     private final TranslateService translateService;
+    @Setter
+    Boolean withTranslate;
 
     public NasaService(NasaApiClient nasaApiClient, NasaRowTableRepository nasaRepository, TranslateService translateService) {
         this.nasaApiClient = nasaApiClient;
@@ -35,20 +34,7 @@ public class NasaService {
     public NasaTo getToday(User user) {
         try {
             NasaTo to = nasaApiClient.getNASAObject(nasaApiClient.makeNasaApiRequest(""));
-            Optional<Nasa> cached = nasaRepository.getByDateAndLang(LocalDate.parse(to.date(),
-                            DateTimeFormatter.ISO_LOCAL_DATE),
-                    user.getTranslateLangCode());
-            if (cached.isPresent()) {
-                log.info("Loaded from cache");
-                return NasaUtil.getTo(cached.get());
-            } else if (withTranslate && user.getTranslateLangCode() != LangCode.EN) {
-                NasaTo translated = translateService.translateTitleAndExplanation(to, user.getTranslateLangCode());
-                nasaRepository.save(NasaUtil.fromTo(translated, user.getTranslateLangCode()));
-                log.info("Translated and saved in cache");
-                return translated;
-            } else {
-                return to;
-            }
+            return getNasaTo(user, to);
         } catch (IOException e) {
             log.error(e.getMessage());
             return null;
@@ -58,20 +44,7 @@ public class NasaService {
     public NasaTo getRandom(User user) {
         try {
             NasaTo to = nasaApiClient.getNASAObjects(nasaApiClient.makeNasaApiRequest("?count=1"))[0];
-            Optional<Nasa> cached = nasaRepository.getByDateAndLang(LocalDate.parse(to.date(),
-                            DateTimeFormatter.ISO_LOCAL_DATE),
-                    user.getTranslateLangCode());
-            if (cached.isPresent()) {
-                log.info("Loaded from cache");
-                return NasaUtil.getTo(cached.get());
-            } else if (withTranslate && user.getTranslateLangCode() != LangCode.EN) {
-                NasaTo translated = translateService.translateTitleAndExplanation(to, user.getTranslateLangCode());
-                nasaRepository.save(NasaUtil.fromTo(translated, user.getTranslateLangCode()));
-                log.info("Translated and saved in cache");
-                return translated;
-            } else {
-                return to;
-            }
+            return getNasaTo(user, to);
         } catch (IOException | InterruptedException e) {
             log.error(e.getMessage());
             return null;
@@ -82,23 +55,27 @@ public class NasaService {
         try {
             NasaTo to = nasaApiClient.getNASAObject(nasaApiClient.makeNasaApiRequest("?date=" +
                     date.format(DateTimeFormatter.ISO_LOCAL_DATE)));
-            Optional<Nasa> cached = nasaRepository.getByDateAndLang(LocalDate.parse(to.date(),
-                            DateTimeFormatter.ISO_LOCAL_DATE),
-                    user.getTranslateLangCode());
-            if (cached.isPresent()) {
-                log.info("Loaded from cache");
-                return NasaUtil.getTo(cached.get());
-            } else if (withTranslate && user.getTranslateLangCode() != LangCode.EN) {
-                NasaTo translated = translateService.translateTitleAndExplanation(to, user.getTranslateLangCode());
-                nasaRepository.save(NasaUtil.fromTo(translated, user.getTranslateLangCode()));
-                log.info("Translated and saved in cache");
-                return translated;
-            } else {
-                return to;
-            }
+            return getNasaTo(user, to);
         } catch (IOException e) {
             log.error(e.getMessage());
             return null;
+        }
+    }
+
+    private NasaTo getNasaTo(User user, NasaTo to) throws IOException {
+        Optional<Nasa> cached = nasaRepository.getByDateAndLang(LocalDate.parse(to.date(),
+                        DateTimeFormatter.ISO_LOCAL_DATE),
+                user.getTranslateLangCode());
+        if (cached.isPresent()) {
+            log.info("Loaded from cache");
+            return NasaUtil.getTo(cached.get());
+        } else if (withTranslate && user.getTranslateLangCode() != LangCode.EN) {
+            NasaTo translated = translateService.translateTitleAndExplanation(to, user.getTranslateLangCode());
+            nasaRepository.save(NasaUtil.fromTo(translated, user.getTranslateLangCode()));
+            log.info("Translated and saved in cache");
+            return translated;
+        } else {
+            return to;
         }
     }
 }
