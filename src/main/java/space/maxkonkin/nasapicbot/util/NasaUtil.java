@@ -20,6 +20,20 @@ public class NasaUtil {
                 nasa.getMediaType(), nasa.getServiceVersion(), nasa.getTitle(), nasa.getUrl());
     }
 
+    public static NasaTo cloneWithReplacedUrl(NasaTo to, String newUrl) {
+        return new NasaTo(
+                to.credit(),
+                to.copyright(),
+                to.date(),
+                to.explanation(),
+                to.hdUrl(),
+                to.mediaType(),
+                to.serviceVersion(),
+                to.title(),
+                newUrl
+        );
+    }
+
     public static String getFormattedMessage(NasaTo nasaTo) {
         String url = nasaTo.url();
         String hdUrl = nasaTo.hdUrl();

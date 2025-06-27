@@ -16,15 +16,21 @@ import java.util.Optional;
 @Repository
 public class NasaRowTableRepository {
     private final EntityManager entityManager = new EntityManager(System.getenv("DATABASE"), System.getenv("ENDPOINT"));
+    private final String tableName;
+
+    public NasaRowTableRepository(String tableName) {
+        this.tableName = tableName;
+    }
 
     public List<Nasa> getAll() {
         List<Nasa> nasaList = new ArrayList<>();
-        entityManager.execute("SELECT * FROM nasapic_row_storage", Params.empty(), ThrowingConsumer.unchecked(result -> {
-            ResultSetReader resultSet = result.getResultSet(0);
-            while (resultSet.next()) {
-                nasaList.add(Nasa.fromResultSet(resultSet));
-            }
-        }));
+        entityManager.execute("SELECT * FROM " + tableName, Params.empty(),
+                ThrowingConsumer.unchecked(result -> {
+                    ResultSetReader resultSet = result.getResultSet(0);
+                    while (resultSet.next()) {
+                        nasaList.add(Nasa.fromResultSet(resultSet));
+                    }
+                }));
         return nasaList;
     }
 
@@ -33,9 +39,10 @@ public class NasaRowTableRepository {
         entityManager.execute("DECLARE $localDate AS Date;" +
                         "DECLARE $langCode AS Utf8;" +
                         "SELECT date, lang, credit, copyright, explanation, title, url, hd_url, media_type " +
-                        "FROM nasapic_row_storage " +
-                        "WHERE date = $localDate AND lang = $langCode",
-                Params.of("$localDate", PrimitiveValue.newDate(date),
+                        "FROM " + tableName +
+                        " WHERE date = $localDate AND lang = $langCode",
+                Params.of(
+                        "$localDate", PrimitiveValue.newDate(date),
                         "$langCode", PrimitiveValue.newText(langCode.getCode())),
                 ThrowingConsumer.unchecked(result -> {
                     ResultSetReader resultSet = result.getResultSet(0);
@@ -56,7 +63,7 @@ public class NasaRowTableRepository {
                 "DECLARE $url AS Utf8;" +
                 "DECLARE $hd_url AS Utf8;" +
                 "DECLARE $media_type AS Utf8;" +
-                "INSERT INTO nasapic_row_storage (date, lang, credit, copyright, explanation, title, url, " +
+                "INSERT INTO " + tableName + " (date, lang, credit, copyright, explanation, title, url, " +
                 "hd_url, media_type)" +
                 "VALUES ($localDate, $lang, $credit, $copyright, $explanation, $title, $url, $hd_url, " +
                 "$media_type)";
@@ -67,7 +74,7 @@ public class NasaRowTableRepository {
         String hd_url = nasa.getHdUrl() != null ? nasa.getHdUrl() : "";
         Params params = Params.of("$localDate", PrimitiveValue.newDate(nasa.getDate()),
                 "$lang", PrimitiveValue.newText(nasa.getLangCode().getCode()),
-                "$credit",PrimitiveValue.newText(credit),
+                "$credit", PrimitiveValue.newText(credit),
                 "$copyright", PrimitiveValue.newText(copyright),
                 "$explanation", PrimitiveValue.newText(explanation),
                 "$title", PrimitiveValue.newText(title),
@@ -87,13 +94,13 @@ public class NasaRowTableRepository {
                 "DECLARE $url AS Utf8;" +
                 "DECLARE $hd_url AS Utf8;" +
                 "DECLARE $media_type AS Utf8;" +
-                "UPSERT INTO nasapic_row_storage (date, lang, credit, copyright, explanation, title, url, " +
+                "UPSERT INTO " + tableName + " (date, lang, credit, copyright, explanation, title, url, " +
                 "hd_url, media_type, service_version)" +
                 "VALUES ($localDate, $lang, $credit, $copyright, $explanation, $title, $url, $hd_url, " +
                 "$media_type)";
         Params params = Params.of("$localDate", PrimitiveValue.newDate(nasa.getDate()),
                 "$lang", PrimitiveValue.newText(nasa.getLangCode().getCode()),
-                "$credit",PrimitiveValue.newText(nasa.getCredit()),
+                "$credit", PrimitiveValue.newText(nasa.getCredit()),
                 "$copyright", PrimitiveValue.newText(nasa.getCopyright()),
                 "$explanation", PrimitiveValue.newText(nasa.getExplanation()),
                 "$title", PrimitiveValue.newText(nasa.getTitle()),
@@ -105,7 +112,7 @@ public class NasaRowTableRepository {
 
     public void deleteByDate(LocalDate date) {
         entityManager.execute("DECLARE $localDate AS Date;" +
-                        "DELETE FROM nasapic_row_storage WHERE date = $localDate",
+                        "DELETE FROM " + tableName + " WHERE date = $localDate",
                 Params.of("$localDate", PrimitiveValue.newDate(date)));
     }
 }

@@ -31,11 +31,11 @@ public class TranslateService {
             if (translatedTexts.size() > 1) {
                 translatedExplanation = translatedTexts.get(1);
             } else {
-                System.out.println("WARN: 'transletedTexts' has only one element!");
+                System.out.println("WARN: 'translatedTexts' has only one element!");
                 translatedExplanation = input.explanation(); // no translation
             }
         } else {
-            System.err.println("'transletedTexts' is empty!");
+            System.err.println("'translatedTexts' is empty!");
         }
         return new NasaTo(input.credit(), input.copyright(), input.date(), translatedExplanation,
                 input.hdUrl(), input.mediaType(), input.serviceVersion(), translatedTitle, input.url());

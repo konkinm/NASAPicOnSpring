@@ -69,4 +69,9 @@ public class SpringConfig {
         service.setWithTranslate(withTranslate);
         return service;
     }
+
+    @Bean
+    public NasaRowTableRepository nasaRowTableRepository() {
+        return new NasaRowTableRepository(System.getenv("TABLE_NAME"));
+    }
 }
