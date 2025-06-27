@@ -43,7 +43,7 @@ public class NasaService {
 
     public NasaTo getRandom(User user) {
         try {
-            NasaTo to = nasaApiClient.getNASAObjects(nasaApiClient.makeNasaApiRequest("?count=1"))[0];
+            NasaTo to = nasaApiClient.getNASAObjects(nasaApiClient.makeNasaApiRequest("?count=1")).getFirst();
             return getNasaTo(user, to);
         } catch (IOException | InterruptedException e) {
             log.error(e.getMessage());
