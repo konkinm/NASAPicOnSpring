@@ -1,0 +1,82 @@
+package space.maxkonkin.nasapicbot.repository
+
+import org.springframework.stereotype.Service
+import space.maxkonkin.nasapicbot.model.User
+import space.maxkonkin.nasapicbot.util.ThrowingConsumer
+import tech.ydb.table.query.DataQueryResult
+import tech.ydb.table.query.Params
+import tech.ydb.table.values.PrimitiveValue
+import java.util.Optional
+
+@Service
+class UserRepository : Repository<User> {
+    private val entityManager: EntityManager =
+        EntityManager(System.getenv("DATABASE"), System.getenv("ENDPOINT"))
+
+    override fun getAll(): List<User> {
+        val users = ArrayList<User>()
+        entityManager.execute("SELECT * FROM nasapic_users", Params.empty(),
+            ThrowingConsumer.unchecked<DataQueryResult, RuntimeException> { result ->
+                val resultSet = result.getResultSet(0)
+                while (resultSet.next()) {
+                    users.add(User.fromResultSet(resultSet))
+                }
+            })
+        return users
+    }
+
+    override fun getById(id: Long): Optional<User> {
+        val users = ArrayList<User>()
+        entityManager.execute("DECLARE \$chat_id AS Uint64; " +
+                "SELECT chat_id, name, is_scheduled, translate_lang_code FROM nasapic_users " +
+                "WHERE chat_id = \$chat_id",
+            Params.of("\$chat_id", PrimitiveValue.newUint64(id)),
+            ThrowingConsumer.unchecked<DataQueryResult, RuntimeException> { result ->
+                val resultSet = result.getResultSet(0)
+                while (resultSet.next()) {
+                    users.add(User.fromResultSet(resultSet))
+                }
+            })
+        return if (users.isNotEmpty()) Optional.of(users.first()) else Optional.empty()
+    }
+
+    override fun save(user: User) {
+        val query = "DECLARE \$chat_id AS Uint64;" +
+                "DECLARE \$name AS Utf8;" +
+                "DECLARE \$is_scheduled AS Bool;" +
+                "DECLARE \$translate_lang_code AS Utf8;" +
+                "INSERT INTO nasapic_users (chat_id, name, is_scheduled, translate_lang_code) " +
+                "VALUES (\$chat_id, \$name, \$is_scheduled,  \$translate_lang_code)"
+        val params = Params.of(
+            "\$chat_id", PrimitiveValue.newUint64(user.chatId),
+            "\$name", PrimitiveValue.newText(user.name),
+            "\$is_scheduled", PrimitiveValue.newBool(user.isScheduled),
+            "\$translate_lang_code", PrimitiveValue.newText(user.translateLangCode.code)
+        )
+        entityManager.execute(query, params)
+    }
+
+    override fun update(user: User) {
+        val query = "DECLARE \$chat_id as Uint64;" +
+                "DECLARE \$name as Utf8;" +
+                "DECLARE \$is_scheduled as Bool;" +
+                "DECLARE \$translate_lang_code as Utf8;" +
+                "UPSERT INTO nasapic_users (chat_id, name, is_scheduled, translate_lang_code) " +
+                "VALUES (\$chat_id, \$name, \$is_scheduled,  \$translate_lang_code)"
+        val params = Params.of(
+            "\$chat_id", PrimitiveValue.newUint64(user.chatId),
+            "\$name", PrimitiveValue.newText(user.name),
+            "\$is_scheduled", PrimitiveValue.newBool(user.isScheduled),
+            "\$translate_lang_code", PrimitiveValue.newText(user.translateLangCode.code)
+        )
+        entityManager.execute(query, params)
+    }
+
+    override fun deleteById(id: Long) {
+        entityManager.execute(
+            "DECLARE \$chat_id as Uint64;" +
+                    "DELETE FROM nasapic_users WHERE chat_id = \$chat_id",
+            Params.of("\$chat_id", PrimitiveValue.newUint64(id))
+        )
+    }
+}

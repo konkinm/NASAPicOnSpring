@@ -1,0 +1,55 @@
+package space.maxkonkin.nasapicbot
+
+import com.fasterxml.jackson.databind.ObjectMapper
+import org.junit.jupiter.api.Test
+import org.slf4j.LoggerFactory
+import space.maxkonkin.nasapicbot.model.QueueMessage
+import space.maxkonkin.nasapicbot.web.handle
+
+class HandlerTest {
+
+    @Test
+    fun main() {
+        val message = """
+                {
+                  "messages": [
+                    {
+                      "details": {
+                        "queue_id": "yrn:yc:ymq:ru-central1:b1gh84dl01a0jkghcf9b:tg-bot-app-dt9lh564tru3gh2l90uu",
+                        "message": {
+                          "message_id": "2b073a97-a8f635fd-5cd5606b-6811fc75",
+                          "md5_of_body": "227d53eaa080cc3bad424a352fd37563",
+                          "body": "{\"update_id\":10281888,\n\"message\":{\"message_id\":252,\"from\":{\"id\":229590625,\"is_bot\":false,\"first_name\":\"Max\",\"username\":\"Mfx_m\",\"language_code\":\"en\"},\"chat\":{\"id\":229590625,\"first_name\":\"Max\",\"username\":\"Mfx_m\",\"type\":\"private\"},\"date\":1695296606,\"text\":\"2025-06-27\",\"entities\":[{\"offset\":0,\"length\":10,\"type\":\"bot_command\"}]}}",
+                          "attributes": {
+                            "ApproximateFirstReceiveTimestamp": "1695296607678",
+                            "ApproximateReceiveCount": "1",
+                            "SenderId": "ajee6hju6eohckp9g2ru@as",
+                            "SentTimestamp": "1695296607376"
+                          },
+                          "message_attributes": {},
+                          "md5_of_message_attributes": ""
+                        }
+                      },
+                      "event_metadata": {
+                        "event_id": "2b073a97-a8f635fd-5cd5606b-6811fc75",
+                        "event_type": "yandex.cloud.events.messagequeue.QueueMessage",
+                        "created_at": "2023-09-21T11:43:27.376Z",
+                        "tracing_context": null,
+                        "cloud_id": "b1gkclasvcpkk5ilt8pp",
+                        "folder_id": "b1gh84dl01a0jkghcf9b"
+                      }
+                    }
+                  ]
+                }
+                
+                """.trimIndent()
+
+        val mapper = ObjectMapper()
+        val status = handle(mapper.readValue(message, QueueMessage::class.java))
+        log.info("Status: {}", mapper.writeValueAsString(status))
+    }
+
+    companion object {
+        private val log = LoggerFactory.getLogger(HandlerTest::class.java)
+    }
+}

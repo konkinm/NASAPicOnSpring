@@ -19,7 +19,7 @@ apod:
 
 logging:
   level:
-    root: INFO
+    root: DEBUG
     org.springframework: ERROR
     space.maxkonkin.nasapicbot: ERROR
   pattern:

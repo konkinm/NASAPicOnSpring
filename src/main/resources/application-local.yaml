@@ -19,7 +19,7 @@ apod:
 
 logging:
   level:
-    root: INFO
+    root: DEBUG
     org.springframework: DEBUG
     space.maxkonkin.nasapicbot: DEBUG
   pattern:
