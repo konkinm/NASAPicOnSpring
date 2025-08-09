@@ -7,7 +7,6 @@ import tech.ydb.table.query.DataQueryResult
 import tech.ydb.table.query.Params
 import tech.ydb.table.values.PrimitiveValue
 import java.time.LocalDate
-import java.util.Optional
 
 class NasaRowTableRepository(private val tableName: String) {
     private val entityManager: EntityManager =
@@ -25,7 +24,7 @@ class NasaRowTableRepository(private val tableName: String) {
         return nasaList
     }
 
-    fun getByDateAndLang(date: LocalDate, langCode: LangCode): Optional<Nasa> {
+    fun getByDateAndLang(date: LocalDate, langCode: LangCode): Nasa? {
         val nasaList: MutableList<Nasa> = ArrayList()
         entityManager.execute("DECLARE \$localDate AS Date;" +
                 "DECLARE \$langCode AS Utf8;" +
@@ -42,7 +41,7 @@ class NasaRowTableRepository(private val tableName: String) {
                     nasaList.add(Nasa.fromResultSet(resultSet))
                 }
             })
-        return if (nasaList.isNotEmpty()) Optional.of(nasaList.first()) else Optional.empty()
+        return if (nasaList.isNotEmpty()) nasaList.first() else null
     }
 
     fun save(nasa: Nasa) {

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 
 data class TimerMessage(
     @JsonProperty("messages")
-    var messages: List<Message>?
+    var messages: List<Message>
 ) {
     data class Message(
         @JsonProperty("event_metadata")

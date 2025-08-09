@@ -22,10 +22,10 @@ fun handle(message: QueueMessage): String {
         return try {
             log.debug("Getting message body...")
             val update = mapper.readValue(messages.first().details?.message?.body, Update::class.java)
-            log.debug("Update: {}", mapper.writeValueAsString(update))
+            log.debug("Update: ${mapper.writeValueAsString(update)}")
             val sendMessage = nasaPicOnSpringBot.handleUpdate(update)
             nasaPicOnSpringBot.execute(sendMessage)
-            log.info("Message sent to chat_id={}", sendMessage?.chatId)
+            log.info("Message sent to chat_id=${sendMessage?.chatId}")
             "OK"
         } catch (e: Exception) {
             when (e) {

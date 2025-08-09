@@ -12,8 +12,8 @@ class YamlPropertySourceFactory : PropertySourceFactory {
         factory.setResources(encodedResource.resource)
         val properties = factory.getObject()
         return PropertiesPropertySource(
-            encodedResource.resource.filename!!,
-            properties!!
+            encodedResource.resource.filename ?: "application.yaml",
+            requireNotNull(properties)
         )
     }
 }

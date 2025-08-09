@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import space.maxkonkin.nasapicbot.model.TimerMessage
 import space.maxkonkin.nasapicbot.web.handle
 
-object TimerHandlerTest {
+class TimerHandlerTest {
     fun main(args: Array<String>) {
         val message = """
                             {

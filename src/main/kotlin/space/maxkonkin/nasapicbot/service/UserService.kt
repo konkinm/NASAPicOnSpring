@@ -4,7 +4,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import space.maxkonkin.nasapicbot.model.User
 import space.maxkonkin.nasapicbot.repository.UserRepository
-import java.util.*
 
 @Service
 class UserService(private val repository: UserRepository) {
@@ -13,7 +12,7 @@ class UserService(private val repository: UserRepository) {
         return repository.getAll()
     }
 
-    fun getById(id: Long): Optional<User> {
+    fun getById(id: Long): User? {
         log.info("get user with chat_id={}", id)
         return repository.getById(id)
     }
@@ -25,7 +24,7 @@ class UserService(private val repository: UserRepository) {
 
     fun saveNew(user: User) {
         log.info("saving user if not exists with chat_id={}", user.chatId)
-        if (getById(user.chatId).isEmpty) {
+        if (getById(user.chatId) != null) {
             log.info("new user saved")
             save(user)
         }
@@ -40,8 +39,6 @@ class UserService(private val repository: UserRepository) {
         log.info("deleting user with chat_id={}", id)
         repository.deleteById(id)
     }
-
-    companion object {
-        private val log = LoggerFactory.getLogger(UserService::class.java)
-    }
 }
+
+private val log = LoggerFactory.getLogger(UserService::class.java)

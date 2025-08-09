@@ -19,10 +19,10 @@ fun handle(timerMessage: TimerMessage): String {
     val nasaPicOnSpringBot = ctx.getBean(NASAPicOnSpringBot::class.java)
     log.debug("Done.")
     val messages = timerMessage.messages
-    if ((messages?.size ?: 0) > 1) throw RuntimeException("Multiple messages not supported!")
+    if (messages.size > 1) throw RuntimeException("Multiple messages not supported!")
     return try {
         log.debug("Getting message payload...")
-        val payload = messages?.first()?.details?.payload
+        val payload = messages.first().details?.payload
         log.debug("Payload: {}", payload)
         val users = userService.getAll()
         for (user in users) {

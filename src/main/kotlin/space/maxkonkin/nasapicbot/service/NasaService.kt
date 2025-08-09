@@ -7,7 +7,8 @@ import space.maxkonkin.nasapicbot.model.LangCode
 import space.maxkonkin.nasapicbot.model.User
 import space.maxkonkin.nasapicbot.repository.NasaRowTableRepository
 import space.maxkonkin.nasapicbot.to.NasaTo
-import space.maxkonkin.nasapicbot.util.NasaUtil
+import space.maxkonkin.nasapicbot.util.fromTo
+import space.maxkonkin.nasapicbot.util.getTo
 import java.io.IOException
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -16,10 +17,9 @@ import java.time.format.DateTimeFormatter
 class NasaService(
     private val nasaApiClient: NasaApiClient,
     private val nasaRepository: NasaRowTableRepository,
-    private val translateService: TranslateService
+    private val translateService: TranslateService,
+    private val withTranslate: Boolean = false
 ) {
-    var withTranslate: Boolean? = null
-
     fun getToday(user: User): NasaTo? {
         return try {
             val to = nasaApiClient.getNASAObject(nasaApiClient.makeNasaApiRequest(""))
@@ -40,6 +40,7 @@ class NasaService(
                     log.error(e.message)
                     null
                 }
+
                 else -> throw e
             }
         }
@@ -60,29 +61,26 @@ class NasaService(
         }
     }
 
-    @Throws(IOException::class)
     private fun getNasaTo(user: User, to: NasaTo): NasaTo {
         val cached = nasaRepository.getByDateAndLang(
             LocalDate.parse(
-                to.date,
+                requireNotNull(to.date),
                 DateTimeFormatter.ISO_LOCAL_DATE
             ),
             user.translateLangCode
         )
-        return if (cached.isPresent) {
+        return if (cached != null) {
             log.info("Loaded from cache")
-            NasaUtil.getTo(cached.get())
-        } else if (withTranslate!! && user.translateLangCode !== LangCode.EN) {
+            getTo(cached)
+        } else if (withTranslate && user.translateLangCode != LangCode.EN) {
             val translated = translateService.translateTitleAndExplanation(to, user.translateLangCode)
-            nasaRepository.save(NasaUtil.fromTo(translated, user.translateLangCode))
+            nasaRepository.save(fromTo(translated, user.translateLangCode))
             log.info("Translated and saved in cache")
             translated
         } else {
             to
         }
     }
-
-    companion object {
-        private val log = LoggerFactory.getLogger(NasaService::class.java)
-    }
 }
+
+private val log = LoggerFactory.getLogger(NasaService::class.java)

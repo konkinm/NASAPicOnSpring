@@ -11,21 +11,21 @@ import space.maxkonkin.nasapicbot.model.User
 import space.maxkonkin.nasapicbot.service.NasaService
 import space.maxkonkin.nasapicbot.service.UserService
 import space.maxkonkin.nasapicbot.to.NasaTo
-import space.maxkonkin.nasapicbot.util.NasaUtil
+import space.maxkonkin.nasapicbot.util.getFormattedMessage
 import java.io.IOException
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.regex.Pattern
 
 class NASAPicOnSpringBot(
-    setWebhook: SetWebhook,
     botToken: String,
+    setWebhook: SetWebhook,
     private val nasaService: NasaService,
-    private val userService: UserService
+    private val userService: UserService,
+    private val errorText: String,
+    private val botPath: String,
+    private val botUsername: String
 ) : SpringWebhookBot(setWebhook, botToken) {
-    private var botPath: String? = null
-    private var botUsername: String? = null
-    var errorText: String? = null
 
     override fun onWebhookUpdateReceived(update: Update): BotApiMethod<*>? {
         return try {
@@ -40,10 +40,6 @@ class NASAPicOnSpringBot(
         return botPath
     }
 
-    fun setBotPath(path: String) {
-        botPath = path
-    }
-
     @Throws(IOException::class)
     fun handleUpdate(update: Update): SendMessage? {
         if (!update.hasCallbackQuery()) {
@@ -53,9 +49,7 @@ class NASAPicOnSpringBot(
                 val tgUser = message.from
                 val newUser = User(chatId, tgUser.userName, false, LangCode.EN)
                 userService.saveNew(newUser)
-                val user = userService.getById(chatId).orElseThrow {
-                    UserNotFoundException("user with chat_id=$chatId not found")
-                }
+                val user = userService.getById(chatId) ?: throw UserNotFoundException("user with chat_id=$chatId not found")
                 val text = message.text
                 val regex = "\\d{4}-\\d{2}-\\d{2}"
                 val pattern = Pattern.compile(regex)
@@ -102,28 +96,27 @@ class NASAPicOnSpringBot(
 
     private fun giveRandomPicture(user: User): SendMessage {
         val random = nasaService.getRandom(user)
-        return sendFormattedMessage(random!!, user.chatId)
+        return sendFormattedMessage(requireNotNull(random) { "Unable to send message" }, user.chatId)
     }
 
-    @Throws(IOException::class)
     fun giveTodayPicture(user: User): SendMessage {
         val today = nasaService.getToday(user)
-        return sendFormattedMessage(today!!, user.chatId)
+        return sendFormattedMessage(requireNotNull(today) { "Unable to send message" }, user.chatId)
     }
 
     private fun givePostedOnDatePicture(date: LocalDate, user: User): SendMessage {
         val onDate = nasaService.getOnDate(date, user)
-        return sendFormattedMessage(onDate!!, user.chatId)
+        return sendFormattedMessage(requireNotNull(onDate) { "Unable to send message" }, user.chatId)
     }
 
     private fun sendFormattedMessage(nasaTo: NasaTo, chatId: Long): SendMessage {
-        return sendMessage(NasaUtil.getFormattedMessage(nasaTo), chatId)
+        return sendMessage(getFormattedMessage(nasaTo), chatId)
     }
 
-    private fun sendMessage(messageText: String?, chatId: Long): SendMessage {
+    private fun sendMessage(messageText: String, chatId: Long): SendMessage {
         val message = SendMessage()
         message.chatId = chatId.toString()
-        message.text = messageText!!
+        message.text = messageText
         message.enableHtml(true)
         return message
     }
@@ -131,18 +124,12 @@ class NASAPicOnSpringBot(
     override fun getBotUsername(): String? {
         return botUsername
     }
+}
 
-    fun setBotUsername(name: String) {
-        botUsername = name
-    }
-
-    companion object {
-        const val HELP_TEXT = """
+const val HELP_TEXT = """
             Привет, я бот NASA! Я высылаю ссылки на картинки (или видео) с описанием по запросу. Введи команду:
             /today чтобы получить сегодняшнюю картинку;
             /random чтобы получить случайную картинку.
             Либо введи дату в формате <b>YYYY-MM-DD</b> и я пришлю ссылку на картинку с описанием, опубликованную в тот день.
             Дата должна быть не раньше 1995-06-20!
             Напоминаю, что картинки на сайте NASA обновляются раз в сутки"""
-    }
-}
