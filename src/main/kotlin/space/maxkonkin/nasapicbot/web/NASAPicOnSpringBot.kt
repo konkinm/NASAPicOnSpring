@@ -12,7 +12,6 @@ import space.maxkonkin.nasapicbot.service.NasaService
 import space.maxkonkin.nasapicbot.service.UserService
 import space.maxkonkin.nasapicbot.to.NasaTo
 import space.maxkonkin.nasapicbot.util.getFormattedMessage
-import java.io.IOException
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.regex.Pattern
@@ -40,7 +39,6 @@ class NASAPicOnSpringBot(
         return botPath
     }
 
-    @Throws(IOException::class)
     fun handleUpdate(update: Update): SendMessage? {
         if (!update.hasCallbackQuery()) {
             if (update.hasMessage()) {
@@ -49,12 +47,12 @@ class NASAPicOnSpringBot(
                 val tgUser = message.from
                 val newUser = User(chatId, tgUser.userName, false, LangCode.EN)
                 userService.saveNew(newUser)
-                val user = userService.getById(chatId) ?: throw UserNotFoundException("user with chat_id=$chatId not found")
+                val user =
+                    userService.getById(chatId) ?: throw UserNotFoundException("user with chat_id=$chatId not found")
                 val text = message.text
                 val regex = "\\d{4}-\\d{2}-\\d{2}"
                 val pattern = Pattern.compile(regex)
-                assert(text != null)
-                val matcher = pattern.matcher(text)
+                val matcher = pattern.matcher(checkNotNull(text))
                 if (matcher.find()) {
                     val fromRegex = matcher.group(0)
                     return try {
@@ -64,7 +62,10 @@ class NASAPicOnSpringBot(
                         ) {
                             givePostedOnDatePicture(date, user)
                         } else {
-                            sendMessage("Введённая дата должна быть не раньше 1995-06-20 и не позже сегодняшней даты", chatId)
+                            sendMessage(
+                                "Введённая дата должна быть не раньше 1995-06-20 и не позже сегодняшней даты",
+                                chatId
+                            )
                         }
                     } catch (e: Exception) {
                         System.err.println("Parsing error! " + e.message)
@@ -82,6 +83,10 @@ class NASAPicOnSpringBot(
 
                         "/random" -> {
                             giveRandomPicture(user)
+                        }
+
+                        "/schedule" -> {
+                            toggleSchedule(user)
                         }
 
                         else -> {
@@ -109,6 +114,12 @@ class NASAPicOnSpringBot(
         return sendFormattedMessage(requireNotNull(onDate) { "Unable to send message" }, user.chatId)
     }
 
+    private fun toggleSchedule(user: User): SendMessage {
+        val isScheduled = !user.isScheduled
+        userService.update(user.copy(isScheduled = isScheduled))
+        return sendMessage("Schedule was updated: ${if (isScheduled) "on" else "off"}", user.chatId)
+    }
+
     private fun sendFormattedMessage(nasaTo: NasaTo, chatId: Long): SendMessage {
         return sendMessage(getFormattedMessage(nasaTo), chatId)
     }
@@ -132,4 +143,5 @@ const val HELP_TEXT = """
             /random чтобы получить случайную картинку.
             Либо введи дату в формате <b>YYYY-MM-DD</b> и я пришлю ссылку на картинку с описанием, опубликованную в тот день.
             Дата должна быть не раньше 1995-06-20!
-            Напоминаю, что картинки на сайте NASA обновляются раз в сутки"""
+            Напоминаю, что картинки на сайте NASA обновляются раз в сутки.
+            """

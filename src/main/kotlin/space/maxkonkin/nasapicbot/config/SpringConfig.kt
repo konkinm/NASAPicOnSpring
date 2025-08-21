@@ -55,10 +55,14 @@ class SpringConfig(private val telegramConfig: TelegramConfig) {
             telegramConfig.botName
         )
         //bot.setWebhook(setWebhook) // skip setting webhook
-        listOfCommands.add(BotCommand("/start", "Получить описание"))
-        listOfCommands.add(BotCommand("/help", "Получить описание"))
-        listOfCommands.add(BotCommand("/today", "Скинуть сегодняшнюю картинку"))
-        listOfCommands.add(BotCommand("/random", "Скинуть случайную картинку"))
+        with(listOfCommands) {
+            add(BotCommand("/start", "Получить описание"))
+            add(BotCommand("/help", "Получить описание"))
+            add(BotCommand("/today", "Скинуть сегодняшнюю картинку"))
+            add(BotCommand("/random", "Скинуть случайную картинку"))
+            add(BotCommand("/schedule", "Переключить отправку сегодняшней картинки по расписанию"))
+        }
+
         bot.execute(SetMyCommands(listOfCommands, BotCommandScopeDefault(), null))
         return bot
     }
