@@ -18,6 +18,9 @@ repositories {
 }
 
 val springVersion = "5.3.30"
+val telegramBotsVersion = "7.11.0"
+val jacksonVersion = "2.6.7"
+val jacksonAnnotationsVersion = "2.16.1"
 
 dependencies {
     // Spring
@@ -25,7 +28,11 @@ dependencies {
     implementation("org.springframework:spring-webmvc:$springVersion")
 
     // TelegramBots
-    implementation("org.telegram:telegrambots-spring-boot-starter:6.9.7.1")
+    implementation("org.telegram:telegrambots-webhook:$telegramBotsVersion")
+    implementation("org.telegram:telegrambots-client:$telegramBotsVersion")
+
+    // https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient
+    implementation("org.apache.httpcomponents:httpclient:4.5.13")
 
     // Lombok
     compileOnly("org.projectlombok:lombok:1.18.30")
@@ -42,19 +49,22 @@ dependencies {
     implementation("tech.ydb:ydb-auth-api:1.0.0")
 
     // Jackson
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.6.7") {
+    implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion") {
         exclude(group = "com.fasterxml.jackson.core", module = "jackson-core")
         exclude(group = "com.fasterxml.jackson.core", module = "jackson-annotations")
     }
-    implementation("com.fasterxml.jackson.core:jackson-core:2.6.7")
-    implementation("com.fasterxml.jackson.core:jackson-annotations:2.16.1")
+    implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
+    implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonAnnotationsVersion")
 
-    testImplementation("com.fasterxml.jackson.core:jackson-databind:2.6.7") {
+    testImplementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion") {
         exclude(group = "com.fasterxml.jackson.core", module = "jackson-core")
         exclude(group = "com.fasterxml.jackson.core", module = "jackson-annotations")
     }
-    testImplementation("com.fasterxml.jackson.core:jackson-core:2.6.7")
-    testImplementation("com.fasterxml.jackson.core:jackson-annotations:2.16.1")
+    testImplementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
+    testImplementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonAnnotationsVersion")
+
+    // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.12.2")
 }
 
 java {

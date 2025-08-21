@@ -1,5 +1,6 @@
 package space.maxkonkin.nasapicbot
 
+import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
 import space.maxkonkin.nasapicbot.model.LangCode
 import space.maxkonkin.nasapicbot.model.User
@@ -10,7 +11,8 @@ import space.maxkonkin.nasapicbot.service.UserService
 class UserServiceTest {
     private val testId = 123456L
 
-    fun main(args: Array<String>) {
+    @Test
+    fun `test user service`() {
         val userService = UserService(UserRepository(
             tableName = "nasapic_users_test",
             entityManager = EntityManager(System.getenv("DATABASE"), System.getenv("ENDPOINT"))

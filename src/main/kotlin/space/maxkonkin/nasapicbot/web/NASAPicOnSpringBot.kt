@@ -1,10 +1,9 @@
 package space.maxkonkin.nasapicbot.web
 
-import org.telegram.telegrambots.meta.api.methods.BotApiMethod
+import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethod
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
-import org.telegram.telegrambots.meta.api.methods.updates.SetWebhook
 import org.telegram.telegrambots.meta.api.objects.Update
-import org.telegram.telegrambots.starter.SpringWebhookBot
+import org.telegram.telegrambots.webhook.TelegramWebhookBot
 import space.maxkonkin.nasapicbot.exception.UserNotFoundException
 import space.maxkonkin.nasapicbot.model.LangCode
 import space.maxkonkin.nasapicbot.model.User
@@ -17,22 +16,24 @@ import java.time.format.DateTimeFormatter
 import java.util.regex.Pattern
 
 class NASAPicOnSpringBot(
-    botToken: String,
-    setWebhook: SetWebhook,
     private val nasaService: NasaService,
     private val userService: UserService,
     private val errorText: String,
     private val botPath: String,
-    private val botUsername: String
-) : SpringWebhookBot(setWebhook, botToken) {
+    private val setWebhook: Runnable? = null,
+    private val deleteWebhook: Runnable? = null
+) : TelegramWebhookBot {
 
-    override fun onWebhookUpdateReceived(update: Update): BotApiMethod<*>? {
-        return try {
-            handleUpdate(update)
-        } catch (e: Exception) {
-            System.err.println(e.message)
-            null
-        }
+    override fun runDeleteWebhook() {
+        deleteWebhook?.run()
+    }
+
+    override fun runSetWebhook() {
+        setWebhook?.run()
+    }
+
+    override fun consumeUpdate(update: Update): BotApiMethod<*>? {
+        return handleUpdate(update)
     }
 
     override fun getBotPath(): String? {
@@ -40,7 +41,7 @@ class NASAPicOnSpringBot(
     }
 
     fun handleUpdate(update: Update): SendMessage? {
-        if (!update.hasCallbackQuery()) {
+        if (update.hasCallbackQuery().not()) {
             if (update.hasMessage()) {
                 val message = update.message
                 val chatId = message.chatId
@@ -125,15 +126,12 @@ class NASAPicOnSpringBot(
     }
 
     private fun sendMessage(messageText: String, chatId: Long): SendMessage {
-        val message = SendMessage()
-        message.chatId = chatId.toString()
-        message.text = messageText
-        message.enableHtml(true)
+        val message = SendMessage.builder()
+            .parseMode("HTML")
+            .chatId(chatId)
+            .text(messageText)
+            .build()
         return message
-    }
-
-    override fun getBotUsername(): String? {
-        return botUsername
     }
 }
 

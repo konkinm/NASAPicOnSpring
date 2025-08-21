@@ -3,6 +3,7 @@ package space.maxkonkin.nasapicbot.web
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException
+import org.telegram.telegrambots.meta.generics.TelegramClient
 import space.maxkonkin.nasapicbot.config.SpringConfig
 import space.maxkonkin.nasapicbot.model.TimerMessage
 import space.maxkonkin.nasapicbot.service.UserService
@@ -17,6 +18,8 @@ fun handle(timerMessage: TimerMessage): String {
     log.debug("Done.")
     log.debug("Instantiating bot...")
     val nasaPicOnSpringBot = ctx.getBean(NASAPicOnSpringBot::class.java)
+    log.debug("Instantiating telegram client...")
+    val telegramClient = ctx.getBean(TelegramClient::class.java)
     log.debug("Done.")
     val messages = timerMessage.messages
     if (messages.size > 1) throw RuntimeException("Multiple messages not supported!")
@@ -28,7 +31,7 @@ fun handle(timerMessage: TimerMessage): String {
         for (user in users) {
             if (user.isScheduled) {
                 val sendMessage = nasaPicOnSpringBot.giveTodayPicture(user)
-                nasaPicOnSpringBot.execute(sendMessage)
+                telegramClient.execute(sendMessage)
                 log.info("Message sent to chat_id={}", sendMessage.chatId)
                 Thread.sleep(50)
             }

@@ -1,11 +1,14 @@
 package space.maxkonkin.nasapicbot
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.junit.jupiter.api.Test
 import space.maxkonkin.nasapicbot.model.TimerMessage
 import space.maxkonkin.nasapicbot.web.handle
 
 class TimerHandlerTest {
-    fun main(args: Array<String>) {
+
+    @Test
+    fun `test timer`() {
         val message = """
                             {
                               "messages": [

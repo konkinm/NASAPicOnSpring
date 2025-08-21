@@ -9,7 +9,7 @@ import space.maxkonkin.nasapicbot.web.handle
 class HandlerTest {
 
     @Test
-    fun main() {
+    fun `test handler`() {
         val message = """
                 {
                   "messages": [

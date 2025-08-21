@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component
 import space.maxkonkin.nasapicbot.config.NasaAPIConfig
 import space.maxkonkin.nasapicbot.to.NasaTo
 import space.maxkonkin.nasapicbot.util.cloneWithReplacedUrl
-import java.io.IOException
 
 @Component
 class NasaApiClient(
@@ -19,7 +18,6 @@ class NasaApiClient(
         return nasaAPIConfig.apiBaseUri + param
     }
 
-    @Throws(IOException::class)
     fun getNASAObject(uri: String): NasaTo {
         httpClient.execute(HttpGet(uri)).use { response ->
             val input = mapper.readValue(response.entity.content, NasaTo::class.java)
@@ -33,7 +31,6 @@ class NasaApiClient(
         }
     }
 
-    @Throws(IOException::class, InterruptedException::class)
     fun getNASAObjects(uri: String): List<NasaTo> {
         httpClient.execute(HttpGet(uri)).use { response ->
             val tos: List<NasaTo> = mapper.readValue(

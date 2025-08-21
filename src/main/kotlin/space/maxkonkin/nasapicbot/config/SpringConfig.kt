@@ -5,10 +5,12 @@ import org.apache.http.impl.client.CloseableHttpClient
 import org.apache.http.impl.client.HttpClients
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.*
+import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands
 import org.telegram.telegrambots.meta.api.methods.updates.SetWebhook
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault
+import org.telegram.telegrambots.meta.generics.TelegramClient
 import space.maxkonkin.nasapicbot.client.NasaApiClient
 import space.maxkonkin.nasapicbot.repository.EntityManager
 import space.maxkonkin.nasapicbot.repository.NasaRowTableRepository
@@ -40,21 +42,18 @@ class SpringConfig(private val telegramConfig: TelegramConfig) {
 
     @Bean
     fun springWebhookBot(
-        botToken: String,
-        setWebhook: SetWebhook,
         nasaService: NasaService,
-        userService: UserService
+        userService: UserService,
+        telegramClient: TelegramClient,
     ): NASAPicOnSpringBot {
         val bot = NASAPicOnSpringBot(
-            botToken,
-            setWebhook,
             nasaService,
             userService,
             telegramConfig.errorText,
             telegramConfig.botPath,
-            telegramConfig.botName
+            ::setWebhook
         )
-        //bot.setWebhook(setWebhook) // skip setting webhook
+        //telegramClient.execute(setWebhook()) // skip setting webhook
         with(listOfCommands) {
             add(BotCommand("/start", "Получить описание"))
             add(BotCommand("/help", "Получить описание"))
@@ -63,7 +62,12 @@ class SpringConfig(private val telegramConfig: TelegramConfig) {
             add(BotCommand("/schedule", "Переключить отправку сегодняшней картинки по расписанию"))
         }
 
-        bot.execute(SetMyCommands(listOfCommands, BotCommandScopeDefault(), null))
+        val setMyCommands: SetMyCommands? = SetMyCommands.builder()
+            .commands(listOfCommands)
+            .scope(BotCommandScopeDefault()) // глобально для всех
+            .build()
+
+        telegramClient.execute(setMyCommands)
         return bot
     }
 
@@ -85,6 +89,11 @@ class SpringConfig(private val telegramConfig: TelegramConfig) {
 
     @Bean
     fun httpClient(): CloseableHttpClient = HttpClients.createDefault()
+
+    @Bean
+    fun telegramClient(): TelegramClient {
+        return OkHttpTelegramClient(getBotToken());
+    }
 
     @Bean
     fun objectMapper(): ObjectMapper = ObjectMapper()
