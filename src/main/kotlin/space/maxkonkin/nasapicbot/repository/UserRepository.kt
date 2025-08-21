@@ -1,13 +1,11 @@
 package space.maxkonkin.nasapicbot.repository
 
-import org.springframework.stereotype.Service
 import space.maxkonkin.nasapicbot.model.User
 import space.maxkonkin.nasapicbot.util.ThrowingConsumer
 import tech.ydb.table.query.DataQueryResult
 import tech.ydb.table.query.Params
 import tech.ydb.table.values.PrimitiveValue
 
-@Service
 class UserRepository(
     private val tableName: String,
     private val entityManager: EntityManager

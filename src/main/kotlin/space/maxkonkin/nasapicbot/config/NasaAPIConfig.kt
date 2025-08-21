@@ -1,12 +1,9 @@
 package space.maxkonkin.nasapicbot.config
 
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.PropertySource
-
-@Configuration
-@PropertySource(value = ["classpath:application-\${SPRING_PROFILE}.yaml"], factory = YamlPropertySourceFactory::class)
-class NasaAPIConfig {
-    @Value("\${apod.api-url}")
-    lateinit var apiBaseUri: String
+fun loadNasaAPIConfig(properties: Map<String, Any>): NasaAPIConfig {
+    return NasaAPIConfig(requireNotNull((properties["apod"] as Map<*, *>)["api-url"] as String))
 }
+
+data class NasaAPIConfig(
+    val apiBaseUri: String
+)

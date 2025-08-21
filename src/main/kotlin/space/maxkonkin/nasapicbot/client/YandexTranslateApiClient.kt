@@ -5,15 +5,13 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.entity.StringEntity
 import org.apache.http.impl.client.CloseableHttpClient
-import org.springframework.stereotype.Component
-import space.maxkonkin.nasapicbot.config.YandexTranslateApiConfig
+import space.maxkonkin.nasapicbot.config.YandexTranslateConfig
 import space.maxkonkin.nasapicbot.model.LangCode
 import java.io.IOException
 import java.io.UnsupportedEncodingException
 
-@Component
 class YandexTranslateApiClient(
-    private val config: YandexTranslateApiConfig,
+    private val config: YandexTranslateConfig,
     private val mapper: ObjectMapper,
     private val httpClient: CloseableHttpClient
 ) {

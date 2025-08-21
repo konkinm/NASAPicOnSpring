@@ -1,11 +1,9 @@
 package space.maxkonkin.nasapicbot.service
 
 import org.slf4j.LoggerFactory
-import org.springframework.stereotype.Service
 import space.maxkonkin.nasapicbot.model.User
 import space.maxkonkin.nasapicbot.repository.UserRepository
 
-@Service
 class UserService(private val repository: UserRepository) {
     fun getAll(): List<User> {
         log.info("get all users")

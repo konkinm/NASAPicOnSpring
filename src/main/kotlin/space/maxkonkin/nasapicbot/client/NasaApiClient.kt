@@ -3,12 +3,10 @@ package space.maxkonkin.nasapicbot.client
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.impl.client.CloseableHttpClient
-import org.springframework.stereotype.Component
 import space.maxkonkin.nasapicbot.config.NasaAPIConfig
 import space.maxkonkin.nasapicbot.to.NasaTo
 import space.maxkonkin.nasapicbot.util.cloneWithReplacedUrl
 
-@Component
 class NasaApiClient(
     private val nasaAPIConfig: NasaAPIConfig,
     private val mapper: ObjectMapper,

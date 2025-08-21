@@ -1,26 +1,29 @@
 package space.maxkonkin.nasapicbot.web
 
+import org.koin.core.context.GlobalContext
+import org.koin.core.context.GlobalContext.startKoin
 import org.slf4j.LoggerFactory
-import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 import org.telegram.telegrambots.meta.generics.TelegramClient
-import space.maxkonkin.nasapicbot.config.SpringConfig
+import space.maxkonkin.nasapicbot.config.bot
 import space.maxkonkin.nasapicbot.model.TimerMessage
 import space.maxkonkin.nasapicbot.service.UserService
 import java.io.IOException
 
 fun handle(timerMessage: TimerMessage): String {
-    log.debug("Initializing Spring context...")
-    val ctx = AnnotationConfigApplicationContext(SpringConfig::class.java)
-    log.debug("Done.")
-    log.debug("Instantiating userService...")
-    val userService = ctx.getBean(UserService::class.java)
+    log.debug("Initializing koin GlobalContext...")
+    if (GlobalContext.getOrNull() == null) {
+        startKoin {
+            modules(bot)
+        }
+    }
     log.debug("Done.")
     log.debug("Instantiating bot...")
-    val nasaPicOnSpringBot = ctx.getBean(NASAPicOnSpringBot::class.java)
+    val nasaPicOnSpringBot = GlobalContext.get().get<NASAPicOnSpringBot>()
     log.debug("Instantiating telegram client...")
-    val telegramClient = ctx.getBean(TelegramClient::class.java)
+    val telegramClient = GlobalContext.get().get<TelegramClient>()
     log.debug("Done.")
+    val userService = GlobalContext.get().get<UserService>()
     val messages = timerMessage.messages
     if (messages.size > 1) throw RuntimeException("Multiple messages not supported!")
     return try {

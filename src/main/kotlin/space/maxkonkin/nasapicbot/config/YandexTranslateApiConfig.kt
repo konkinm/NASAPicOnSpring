@@ -1,18 +1,15 @@
 package space.maxkonkin.nasapicbot.config
 
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.PropertySource
-
-@Configuration
-@PropertySource(value = ["classpath:application-\${SPRING_PROFILE}.yaml"], factory = YamlPropertySourceFactory::class)
-class YandexTranslateApiConfig {
-    @Value("\${yandex-api.api-url}")
-    lateinit var apiBaseUri: String
-
-    @Value("\${yandex-api.folder-id}")
-    lateinit var folderId: String
-
-    @Value("\${yandex-api.api-token}")
-    lateinit var apiToken: String
+fun loadYandexTranslateConfig(properties: Map<String, Any>): YandexTranslateConfig {
+    return YandexTranslateConfig(
+        apiBaseUri = requireNotNull((properties["yandex-api"] as Map<*, *>)["api-url"]) as String,
+        folderId = requireNotNull((properties["yandex-api"] as Map<*, *>)["folder-id"]) as String,
+        apiToken = System.getenv("YA_API_TOKEN")
+    )
 }
+
+data class YandexTranslateConfig(
+    val apiBaseUri: String,
+    val folderId: String,
+    val apiToken: String
+)

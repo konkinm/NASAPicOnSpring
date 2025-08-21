@@ -3,7 +3,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm") version "2.0.0"
-    kotlin("plugin.spring") version "2.0.0"
 }
 
 group = "space.maxkonkin"
@@ -17,15 +16,15 @@ repositories {
     mavenCentral()
 }
 
-val springVersion = "5.3.30"
 val telegramBotsVersion = "7.11.0"
 val jacksonVersion = "2.6.7"
 val jacksonAnnotationsVersion = "2.16.1"
 
 dependencies {
-    // Spring
-    implementation("org.springframework:spring-context:$springVersion")
-    implementation("org.springframework:spring-webmvc:$springVersion")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.8.0")
+
+    // https://mvnrepository.com/artifact/io.insert-koin/koin-core
+    implementation("io.insert-koin:koin-core:3.5.6")
 
     // TelegramBots
     implementation("org.telegram:telegrambots-webhook:$telegramBotsVersion")
@@ -41,7 +40,7 @@ dependencies {
     implementation("org.yaml:snakeyaml:2.2")
 
     // Logger
-    implementation("ch.qos.logback:logback-classic:1.4.12")
+    implementation("ch.qos.logback:logback-classic:1.5.13")
 
     // YDB
     implementation("tech.ydb:ydb-sdk-table:2.1.7")

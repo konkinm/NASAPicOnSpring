@@ -1,7 +1,6 @@
 package space.maxkonkin.nasapicbot.service
 
 import org.slf4j.LoggerFactory
-import org.springframework.stereotype.Service
 import space.maxkonkin.nasapicbot.client.NasaApiClient
 import space.maxkonkin.nasapicbot.model.LangCode
 import space.maxkonkin.nasapicbot.model.User
@@ -13,7 +12,6 @@ import java.io.IOException
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-@Service
 class NasaService(
     private val nasaApiClient: NasaApiClient,
     private val nasaRepository: NasaRowTableRepository,

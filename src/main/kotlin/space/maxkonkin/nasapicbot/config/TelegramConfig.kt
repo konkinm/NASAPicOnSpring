@@ -1,24 +1,32 @@
 package space.maxkonkin.nasapicbot.config
 
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.PropertySource
+import org.telegram.telegrambots.meta.api.objects.commands.BotCommand
 
-@Configuration
-@PropertySource(value = ["classpath:application-\${SPRING_PROFILE}.yaml"], factory = YamlPropertySourceFactory::class)
-class TelegramConfig {
-    @Value("\${telegram.bot-path}")
-    lateinit var botPath: String
+fun loadTelegramConfig(properties: Map<String, Any>): TelegramConfig {
 
-    @Value("\${telegram.bot-token}")
-    lateinit var botToken: String
-
-    @Value("\${telegram.webhook-path}")
-    lateinit var webhookPath: String
-
-    @Value("\${telegram.bot-name}")
-    lateinit var botName: String
-
-    @Value("\${message.errorText.text}")
-    lateinit var errorText: String
+    return TelegramConfig(
+        botPath = requireNotNull((properties["telegram"] as Map<*, *>)["bot-path"]) as String,
+        botToken = System.getenv("BOT_TOKEN"),
+        webhookPath = requireNotNull((properties["telegram"] as Map<*, *>)["webhook-path"]) as String,
+        botName = requireNotNull((properties["telegram"] as Map<*, *>)["bot-name"]) as String,
+        errorText = requireNotNull((properties["message"] as Map<*, *>)["error-text"]) as String,
+        listOfCommands = listOfCommands
+    )
 }
+
+data class TelegramConfig(
+    val botPath: String,
+    val botToken: String,
+    val webhookPath: String,
+    val botName: String,
+    val errorText: String,
+    val listOfCommands: List<BotCommand>
+)
+
+private val listOfCommands = listOf(
+    BotCommand("/start", "Получить описание"),
+    BotCommand("/help", "Получить описание"),
+    BotCommand("/today", "Скинуть сегодняшнюю картинку"),
+    BotCommand("/random", "Скинуть случайную картинку"),
+    BotCommand("/schedule", "Переключить отправку сегодняшней картинки по расписанию"),
+)

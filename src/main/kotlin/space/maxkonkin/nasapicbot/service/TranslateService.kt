@@ -1,11 +1,9 @@
 package space.maxkonkin.nasapicbot.service
 
-import org.springframework.stereotype.Service
 import space.maxkonkin.nasapicbot.client.YandexTranslateApiClient
 import space.maxkonkin.nasapicbot.model.LangCode
 import space.maxkonkin.nasapicbot.to.NasaTo
 
-@Service
 class TranslateService(private val client: YandexTranslateApiClient) {
     fun translateTitleAndExplanation(input: NasaTo, langCode: LangCode): NasaTo {
         val title = input.title
