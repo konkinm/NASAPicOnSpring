@@ -1,8 +1,7 @@
 package space.maxkonkin.nasapicbot.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.apache.http.impl.client.CloseableHttpClient
-import org.apache.http.impl.client.HttpClients
+import okhttp3.OkHttpClient
 import org.koin.dsl.module
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands
@@ -76,7 +75,7 @@ fun userRepository(): UserRepository = UserRepository(
     EntityManager(System.getenv("DATABASE"), System.getenv("ENDPOINT"))
 )
 
-fun httpClient(): CloseableHttpClient = HttpClients.createDefault()
+fun httpClient(): OkHttpClient = OkHttpClient.Builder().build()
 
 fun createBotCommands(telegramConfig: TelegramConfig, telegramClient: TelegramClient) {
     val setMyCommands: SetMyCommands = SetMyCommands.builder()

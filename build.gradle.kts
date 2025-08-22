@@ -21,8 +21,6 @@ val jacksonVersion = "2.6.7"
 val jacksonAnnotationsVersion = "2.16.1"
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.8.0")
-
     // https://mvnrepository.com/artifact/io.insert-koin/koin-core
     implementation("io.insert-koin:koin-core:3.5.6")
 
@@ -30,8 +28,8 @@ dependencies {
     implementation("org.telegram:telegrambots-webhook:$telegramBotsVersion")
     implementation("org.telegram:telegrambots-client:$telegramBotsVersion")
 
-    // https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient
-    implementation("org.apache.httpcomponents:httpclient:4.5.13")
+    // https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
     // Lombok
     compileOnly("org.projectlombok:lombok:1.18.30")

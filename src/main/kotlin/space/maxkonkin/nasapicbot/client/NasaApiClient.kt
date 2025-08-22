@@ -1,8 +1,8 @@
 package space.maxkonkin.nasapicbot.client
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.apache.http.client.methods.HttpGet
-import org.apache.http.impl.client.CloseableHttpClient
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import space.maxkonkin.nasapicbot.config.NasaAPIConfig
 import space.maxkonkin.nasapicbot.to.NasaTo
 import space.maxkonkin.nasapicbot.util.cloneWithReplacedUrl
@@ -10,15 +10,16 @@ import space.maxkonkin.nasapicbot.util.cloneWithReplacedUrl
 class NasaApiClient(
     private val nasaAPIConfig: NasaAPIConfig,
     private val mapper: ObjectMapper,
-    private val httpClient: CloseableHttpClient
+    private val httpClient: OkHttpClient
 ) {
     fun makeNasaApiRequest(param: String): String {
         return nasaAPIConfig.apiBaseUri + param
     }
 
     fun getNASAObject(uri: String): NasaTo {
-        httpClient.execute(HttpGet(uri)).use { response ->
-            val input = mapper.readValue(response.entity.content, NasaTo::class.java)
+        val request = Request.Builder().url(uri).build()
+        httpClient.newCall(request).execute().use { response ->
+            val input = mapper.readValue(response.body?.string(), NasaTo::class.java)
             return if (input.mediaType == "video" && input.url?.contains("embed/") == true) {
                 val filtered = input.url.replace("embed/", "watch?v=")
                     .replace("?rel=0", "")
@@ -30,9 +31,10 @@ class NasaApiClient(
     }
 
     fun getNASAObjects(uri: String): List<NasaTo> {
-        httpClient.execute(HttpGet(uri)).use { response ->
+        val request = Request.Builder().url(uri).build()
+        httpClient.newCall(request).execute().use { response ->
             val tos: List<NasaTo> = mapper.readValue(
-                response.entity.content,
+                response.body?.string(),
                 mapper.typeFactory.constructCollectionType(List::class.java, NasaTo::class.java)
             )
             return getFiltered(tos)

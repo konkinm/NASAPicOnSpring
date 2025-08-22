@@ -2,36 +2,36 @@ package space.maxkonkin.nasapicbot.client
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.apache.http.client.methods.HttpPost
-import org.apache.http.entity.StringEntity
-import org.apache.http.impl.client.CloseableHttpClient
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
 import space.maxkonkin.nasapicbot.config.YandexTranslateConfig
 import space.maxkonkin.nasapicbot.model.LangCode
-import java.io.IOException
-import java.io.UnsupportedEncodingException
 
 class YandexTranslateApiClient(
     private val config: YandexTranslateConfig,
     private val mapper: ObjectMapper,
-    private val httpClient: CloseableHttpClient
+    private val httpClient: OkHttpClient
 ) {
-    @Throws(IOException::class)
     fun translate(inputTexts: List<String>, langCode: LangCode): List<String> {
-        val httpPost = HttpPost(config.apiBaseUri)
-        httpPost.setHeader("Content-type", "application/json")
-        httpPost.setHeader("Authorization", config.apiToken)
-        val entity = getStringEntity(inputTexts, langCode)
-        httpPost.entity = entity
+        val requestBody = getStringEntity(inputTexts, langCode).toRequestBody("application/json".toMediaType())
+        val request = Request.Builder()
+            .url(config.apiBaseUri)
+            .addHeader("Content-type", "application/json")
+            .addHeader("Authorization", config.apiToken)
+            .post(requestBody)
+            .build()
         val textNodes: List<JsonNode>
-        httpClient.execute(httpPost).use { response ->
-            val jsonNode = mapper.readTree(response.entity.content)
+        httpClient.newCall(request).execute().use { response ->
+            val jsonNode = mapper.readTree(response.body?.string())
             textNodes = jsonNode.findValues("text")
         }
+
         return textNodes.map { node -> node.textValue() }.toList()
     }
 
-    @Throws(UnsupportedEncodingException::class)
-    private fun getStringEntity(inputTexts: List<String>, langCode: LangCode): StringEntity {
+    private fun getStringEntity(inputTexts: List<String>, langCode: LangCode): String {
         val commaSeparatedTexts = StringBuilder()
         for (inputText in inputTexts) {
             val filteredInputText = inputText.replace("\"", "\\\"")
@@ -41,6 +41,6 @@ class YandexTranslateApiClient(
         }
         val json =
             """{ "folderId": "${config.folderId}", "texts": [$commaSeparatedTexts], "targetLanguageCode": "${langCode.code}"}"""
-        return StringEntity(json)
+        return json
     }
 }
