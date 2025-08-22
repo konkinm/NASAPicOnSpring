@@ -4,34 +4,34 @@ import com.fasterxml.jackson.annotation.JsonProperty
 
 data class TimerMessage(
     @JsonProperty("messages")
-    var messages: List<Message>
+    val messages: List<Message>
 ) {
     data class Message(
         @JsonProperty("event_metadata")
-        var eventMetadata: EventMetadata?,
+        val eventMetadata: EventMetadata?,
         @JsonProperty("details")
-        var details: Details?
+        val details: Details?
     )
 
     data class EventMetadata(
         @JsonProperty("event_id")
-        var eventId: String?,
+        val eventId: String?,
         @JsonProperty("event_type")
-        var eventType: String?,
+        val eventType: String?,
         @JsonProperty("created_at")
-        var createdAt: String?,
+        val createdAt: String?,
         @JsonProperty("tracing_context")
-        var tracingContext: String?,
+        val tracingContext: String?,
         @JsonProperty("cloud_id")
-        var cloudId: String?,
+        val cloudId: String?,
         @JsonProperty("folder_id")
-        var folderId: String?
+        val folderId: String?
     )
 
     data class Details(
         @JsonProperty("trigger_id")
-        var triggerId: String?,
+        val triggerId: String?,
         @JsonProperty("payload")
-        var payload: String?
+        val payload: String?
     )
 }

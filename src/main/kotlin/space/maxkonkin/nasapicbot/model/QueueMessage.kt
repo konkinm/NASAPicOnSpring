@@ -6,79 +6,79 @@ import com.fasterxml.jackson.annotation.JsonProperty
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 data class QueueMessage(
     @JsonProperty("messages")
-    var messages: List<Message>
+    val messages: List<Message>
 ) {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     data class Message(
         @JsonProperty("event_metadata")
-        var eventMetadata: EventMetadata?,
+        val eventMetadata: EventMetadata?,
         @JsonProperty("details")
-        var details: Details?
+        val details: Details?
     )
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     data class Details(
         @JsonProperty("queue_id")
-        var queueId: String?,
+        val queueId: String?,
         @JsonProperty("message")
-        var message: MessageDetails?
+        val message: MessageDetails?
     )
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     data class MessageDetails(
         @JsonProperty("message_id")
-        var messageId: String?,
+        val messageId: String?,
         @JsonProperty("md5_of_body")
-        var md5OfBody: String?,
+        val md5OfBody: String?,
         @JsonProperty("body")
-        var body: String?,
+        val body: String?,
         @JsonProperty("attributes")
-        var attributes: Attributes?,
+        val attributes: Attributes?,
         @JsonProperty("message_attributes")
-        var messageAttributes: MessageAttributes?,
+        val messageAttributes: MessageAttributes?,
         @JsonProperty("md5_of_message_attributes")
-        var md5OfMessageAttributes: String?
+        val md5OfMessageAttributes: String?
     )
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     data class Attributes(
         @JsonProperty("ApproximateFirstReceiveTimestamp")
-        var approximateFirstReceiveTimestamp: String?,
+        val approximateFirstReceiveTimestamp: String?,
         @JsonProperty("ApproximateReceiveCount")
-        var approximateReceiveCount: String?,
+        val approximateReceiveCount: String?,
         @JsonProperty("SenderId")
-        var senderId: String?,
+        val senderId: String?,
         @JsonProperty("SentTimestamp")
-        var sentTimestamp: String?
+        val sentTimestamp: String?
     )
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     data class EventMetadata(
         @JsonProperty("event_id")
-        var eventId: String?,
+        val eventId: String?,
         @JsonProperty("event_type")
-        var eventType: String?,
+        val eventType: String?,
         @JsonProperty("created_at")
-        var createdAt: String?,
+        val createdAt: String?,
         @JsonProperty("tracing_context")
-        var tracingContext: String?,
+        val tracingContext: String?,
         @JsonProperty("cloud_id")
-        var cloudId: String?,
+        val cloudId: String?,
         @JsonProperty("folder_id")
-        var folderId: String?
+        val folderId: String?
     )
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     data class MessageAttributes(
         @JsonProperty("messageAttributeKey")
-        var messageAttributeKey: MessageAttributeKey?
+        val messageAttributeKey: MessageAttributeKey?
     )
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     data class MessageAttributeKey(
         @JsonProperty("dataType")
-        var dataType: String?,
-        @JsonProperty("stringvarue")
-        var stringvarue: String?
+        val dataType: String?,
+        @JsonProperty("stringvalue")
+        val stringvalue: String?
     )
 }

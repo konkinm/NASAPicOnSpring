@@ -6,13 +6,12 @@ import space.maxkonkin.nasapicbot.to.NasaTo
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-
 fun fromTo(to: NasaTo, langCode: LangCode): Nasa {
     return Nasa(
         langCode,
         to.credit,
         to.copyright,
-        LocalDate.parse(to.date, DateTimeFormatter.ISO_LOCAL_DATE),
+        LocalDate.parse(requireNotNull(to.date), DateTimeFormatter.ISO_LOCAL_DATE),
         to.explanation,
         to.hdUrl,
         to.mediaType,
