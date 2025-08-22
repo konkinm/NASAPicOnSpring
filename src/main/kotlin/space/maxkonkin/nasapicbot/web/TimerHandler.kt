@@ -28,16 +28,19 @@ fun handle(timerMessage: TimerMessage): String {
     if (messages.size > 1) throw RuntimeException("Multiple messages not supported!")
     return try {
         log.debug("Getting message payload...")
-        val payload = messages.first().details?.payload
+        val payload = requireNotNull(messages.first().details?.payload)
         log.debug("Payload: {}", payload)
-        val users = userService.getAll()
-        for (user in users) {
+        val user = userService.getById(payload.toLong())
+        if (user != null) {
             if (user.isScheduled) {
                 val sendMessage = nasaPicOnSpringBot.giveTodayPicture(user)
                 telegramClient.execute(sendMessage)
                 log.info("Message sent to chat_id={}", sendMessage.chatId)
-                Thread.sleep(50)
+            } else {
+                log.info("Message not sent. Scheduling is off for user with chat_id=${user.chatId}")
             }
+        } else {
+            log.error("Message not sent. User with chat_id=$payload not found")
         }
         "OK"
     } catch (e: Exception) {
