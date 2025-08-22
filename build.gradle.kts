@@ -17,7 +17,7 @@ repositories {
 }
 
 val telegramBotsVersion = "9.0.0"
-val jacksonVersion = "2.6.7"
+val jacksonVersion = "2.13.4.2"
 val jacksonAnnotationsVersion = "2.16.1"
 
 dependencies {
