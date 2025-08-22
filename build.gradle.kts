@@ -16,7 +16,7 @@ repositories {
     mavenCentral()
 }
 
-val telegramBotsVersion = "7.11.0"
+val telegramBotsVersion = "9.0.0"
 val jacksonVersion = "2.6.7"
 val jacksonAnnotationsVersion = "2.16.1"
 
