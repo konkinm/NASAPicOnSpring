@@ -17,8 +17,8 @@ repositories {
 }
 
 val telegramBotsVersion = "9.0.0"
-val jacksonVersion = "2.13.4.2"
-val jacksonAnnotationsVersion = "2.16.1"
+val jacksonVersion = "2.17.2"
+val jacksonAnnotationsVersion = "2.17.2"
 
 dependencies {
     // https://mvnrepository.com/artifact/io.insert-koin/koin-core
@@ -55,6 +55,7 @@ dependencies {
     }
     implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonAnnotationsVersion")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
 
     testImplementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion") {
         exclude(group = "com.fasterxml.jackson.core", module = "jackson-core")
@@ -62,6 +63,7 @@ dependencies {
     }
     testImplementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
     testImplementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonAnnotationsVersion")
+    testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
 
     // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.12.2")

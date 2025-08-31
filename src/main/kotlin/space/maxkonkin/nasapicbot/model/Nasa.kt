@@ -6,34 +6,34 @@ import java.time.LocalDate
 
 data class Nasa(
     @JsonProperty("lang")
-    var langCode: LangCode?,
+    val langCode: LangCode?,
 
     @JsonProperty("credit")
-    var credit: String?,
+    val credit: String?,
 
     @JsonProperty("copyright")
-    var copyright: String?,
+    val copyright: String?,
 
     @JsonProperty("date")
-    var date: LocalDate?,
+    val date: LocalDate?,
 
     @JsonProperty("explanation")
-    var explanation: String?,
+    val explanation: String?,
 
     @JsonProperty("hdurl")
-    var hdUrl: String?,
+    val hdUrl: String?,
 
     @JsonProperty("media_type")
-    var mediaType: String?,
+    val mediaType: String?,
 
     @JsonProperty("service_version")
-    var serviceVersion: String?,
+    val serviceVersion: String?,
 
     @JsonProperty("title")
-    var title: String?,
+    val title: String?,
 
     @JsonProperty("url")
-    var url: String?
+    val url: String?
 ) {
     companion object {
         fun fromResultSet(resultSet: ResultSetReader): Nasa {

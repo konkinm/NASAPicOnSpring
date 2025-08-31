@@ -1,6 +1,9 @@
 package space.maxkonkin.nasapicbot.config
 
+import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import okhttp3.OkHttpClient
 import org.koin.dsl.module
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient
@@ -30,7 +33,14 @@ val config = module {
 val utils = module {
     includes(config)
 
-    single { ObjectMapper() }
+    single { 
+        ObjectMapper().apply {
+            registerKotlinModule()
+            configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+            enable(SerializationFeature.INDENT_OUTPUT)
+        }
+    }
     single { httpClient() }
     single { telegramClient(get()) }
 }
