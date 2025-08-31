@@ -40,6 +40,9 @@ dependencies {
     // Logger
     implementation("ch.qos.logback:logback-classic:1.5.13")
 
+    // YSDK
+    implementation("com.yandex.cloud:java-sdk-serverless:2.8.0")
+
     // YDB
     implementation("tech.ydb:ydb-sdk-table:2.1.7")
     implementation("tech.ydb.auth:yc-auth-provider:2.1.1")

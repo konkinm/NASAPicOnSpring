@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
 import space.maxkonkin.nasapicbot.model.QueueMessage
-import space.maxkonkin.nasapicbot.web.handle
+import space.maxkonkin.nasapicbot.web.Handler
 
 class HandlerTest {
 
@@ -45,7 +45,8 @@ class HandlerTest {
                 """.trimIndent()
 
         val mapper = ObjectMapper()
-        val status = handle(mapper.readValue(message, QueueMessage::class.java))
+        val handler = Handler()
+        val status = handler.handle(mapper.readValue(message, QueueMessage::class.java), null)
         log.info("Status: {}", mapper.writeValueAsString(status))
     }
 }

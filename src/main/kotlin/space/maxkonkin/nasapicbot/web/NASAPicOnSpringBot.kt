@@ -6,6 +6,7 @@ import org.telegram.telegrambots.meta.api.objects.Update
 import org.telegram.telegrambots.webhook.TelegramWebhookBot
 import space.maxkonkin.nasapicbot.exception.UserNotFoundException
 import space.maxkonkin.nasapicbot.model.LangCode
+import space.maxkonkin.nasapicbot.model.Token
 import space.maxkonkin.nasapicbot.model.User
 import space.maxkonkin.nasapicbot.service.NasaService
 import space.maxkonkin.nasapicbot.service.UserService
@@ -33,14 +34,14 @@ class NASAPicOnSpringBot(
     }
 
     override fun consumeUpdate(update: Update): BotApiMethod<*>? {
-        return handleUpdate(update)
+        return handleUpdate(update, null)
     }
 
     override fun getBotPath(): String? {
         return botPath
     }
 
-    fun handleUpdate(update: Update): SendMessage? {
+    fun handleUpdate(update: Update, token: Token?): SendMessage? {
         if (update.hasCallbackQuery().not()) {
             if (update.hasMessage()) {
                 val message = update.message
@@ -87,7 +88,7 @@ class NASAPicOnSpringBot(
                         }
 
                         "/schedule" -> {
-                            toggleSchedule(user)
+                            toggleSchedule(user, token)
                         }
 
                         else -> {
@@ -115,9 +116,9 @@ class NASAPicOnSpringBot(
         return sendFormattedMessage(requireNotNull(onDate) { "Unable to send message" }, user.chatId)
     }
 
-    private fun toggleSchedule(user: User): SendMessage {
+    private fun toggleSchedule(user: User, token: Token?): SendMessage {
         val isScheduled = !user.isScheduled
-        userService.update(user.copy(isScheduled = isScheduled))
+        userService.updateSchedule(user.copy(isScheduled = isScheduled), token)
         return sendMessage("Schedule was updated: ${if (isScheduled) "on" else "off"}", user.chatId)
     }
 

@@ -9,6 +9,7 @@ import org.telegram.telegrambots.meta.api.methods.updates.SetWebhook
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault
 import org.telegram.telegrambots.meta.generics.TelegramClient
 import space.maxkonkin.nasapicbot.client.NasaApiClient
+import space.maxkonkin.nasapicbot.client.YandexCloudClient
 import space.maxkonkin.nasapicbot.client.YandexTranslateApiClient
 import space.maxkonkin.nasapicbot.config.PropertiesLoader.loadProperties
 import space.maxkonkin.nasapicbot.repository.EntityManager
@@ -51,7 +52,8 @@ val nasa = module {
 
 val user = module {
     single { userRepository() }
-    single { UserService(get()) }
+    single { YandexCloudClient(get(), get(), get()) }
+    single { UserService(get(), get()) }
 }
 
 val bot = module {

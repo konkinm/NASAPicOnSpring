@@ -13,7 +13,7 @@ class UserRepository(
 
     override fun getAll(): List<User> {
         val users = ArrayList<User>()
-        entityManager.execute("SELECT * FROM nasapic_users", Params.empty(),
+        entityManager.execute("SELECT * FROM $tableName", Params.empty(),
             ThrowingConsumer.unchecked<DataQueryResult, RuntimeException> { result ->
                 val resultSet = result.getResultSet(0)
                 while (resultSet.next()) {
@@ -26,7 +26,7 @@ class UserRepository(
     override fun getById(id: Long): User? {
         val users = ArrayList<User>()
         entityManager.execute("DECLARE \$chat_id AS Uint64; " +
-                "SELECT chat_id, name, is_scheduled, translate_lang_code FROM $tableName " +
+                "SELECT chat_id, name, is_scheduled, translate_lang_code, trigger_id FROM $tableName " +
                 "WHERE chat_id = \$chat_id",
             Params.of("\$chat_id", PrimitiveValue.newUint64(id)),
             ThrowingConsumer.unchecked<DataQueryResult, RuntimeException> { result ->
@@ -55,17 +55,19 @@ class UserRepository(
     }
 
     override fun update(entity: User) {
-        val query = "DECLARE \$chat_id as Uint64;" +
-                "DECLARE \$name as Utf8;" +
-                "DECLARE \$is_scheduled as Bool;" +
-                "DECLARE \$translate_lang_code as Utf8;" +
-                "UPSERT INTO $tableName (chat_id, name, is_scheduled, translate_lang_code) " +
-                "VALUES (\$chat_id, \$name, \$is_scheduled,  \$translate_lang_code)"
+        val query = "DECLARE \$chat_id AS Uint64;" +
+                "DECLARE \$name AS Utf8;" +
+                "DECLARE \$is_scheduled AS Bool;" +
+                "DECLARE \$translate_lang_code AS Utf8;" +
+                "DECLARE \$trigger_id AS Utf8;" +
+                "UPSERT INTO $tableName (chat_id, name, is_scheduled, translate_lang_code, trigger_id) " +
+                "VALUES (\$chat_id, \$name, \$is_scheduled, \$translate_lang_code, \$trigger_id)"
         val params = Params.of(
             "\$chat_id", PrimitiveValue.newUint64(entity.chatId),
             "\$name", PrimitiveValue.newText(entity.name),
             "\$is_scheduled", PrimitiveValue.newBool(entity.isScheduled),
-            "\$translate_lang_code", PrimitiveValue.newText(entity.translateLangCode.code)
+            "\$translate_lang_code", PrimitiveValue.newText(entity.translateLangCode.code),
+            "\$trigger_id", PrimitiveValue.newText(entity.triggerId)
         )
         entityManager.execute(query, params)
     }

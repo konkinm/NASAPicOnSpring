@@ -3,10 +3,11 @@ package space.maxkonkin.nasapicbot.model
 import tech.ydb.table.result.ResultSetReader
 
 data class User(
-    var chatId: Long,
-    var name: String,
-    var isScheduled: Boolean,
-    var translateLangCode: LangCode
+    val chatId: Long,
+    val name: String,
+    val isScheduled: Boolean,
+    val translateLangCode: LangCode,
+    val triggerId: String? = null
 ) {
     companion object {
         fun fromResultSet(resultSet: ResultSetReader): User {
@@ -14,7 +15,9 @@ data class User(
             val name = resultSet.getColumn("name").text
             val isScheduled = resultSet.getColumn("is_scheduled").bool
             val translateLangCode = LangCode.valueOf(resultSet.getColumn("translate_lang_code").text.uppercase())
-            return User(chatId, name, isScheduled, translateLangCode)
+            val triggerIdValue = resultSet.getColumn("trigger_id").value.asOptional()
+            val triggerId = if (triggerIdValue.isPresent) triggerIdValue.get().asData().text else null
+            return User(chatId, name, isScheduled, translateLangCode, triggerId)
         }
     }
 }
