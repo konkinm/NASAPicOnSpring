@@ -91,6 +91,10 @@ class NASAPicOnSpringBot(
                             toggleSchedule(user, token)
                         }
 
+                        "/translate" -> {
+                            toggleTranslate(user)
+                        }
+
                         else -> {
                             sendMessage(errorText, chatId)
                         }
@@ -120,6 +124,19 @@ class NASAPicOnSpringBot(
         val isScheduled = !user.isScheduled
         userService.updateSchedule(user.copy(isScheduled = isScheduled), token)
         return sendMessage("Schedule was updated: ${if (isScheduled) "on" else "off"}", user.chatId)
+    }
+
+    private fun toggleTranslate(
+        user: User,
+        targetLang: LangCode = LangCode.RU
+    ): SendMessage {
+        val updatedUser = if (user.translateLangCode != LangCode.EN) {
+            user.copy(translateLangCode = LangCode.EN)
+        } else {
+            user.copy(translateLangCode = targetLang)
+        }
+        userService.update(updatedUser)
+        return sendMessage("Translation was ${if (updatedUser.translateLangCode != LangCode.EN) "enabled" else "disabled"}", updatedUser.chatId)
     }
 
     private fun sendFormattedMessage(nasaTo: NasaTo, chatId: Long): SendMessage {

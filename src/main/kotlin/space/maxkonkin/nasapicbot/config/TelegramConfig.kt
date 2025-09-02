@@ -29,4 +29,5 @@ private val listOfCommands = listOf(
     BotCommand("/today", "Скинуть сегодняшнюю картинку"),
     BotCommand("/random", "Скинуть случайную картинку"),
     BotCommand("/schedule", "Переключить отправку сегодняшней картинки по расписанию"),
+    BotCommand("/translate", "Переключить перевод EN->RU"),
 )

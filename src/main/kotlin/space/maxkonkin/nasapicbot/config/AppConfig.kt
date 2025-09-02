@@ -69,7 +69,7 @@ val user = module {
 val bot = module {
     includes(nasa, user)
 
-    single { createBotCommands(get(), get()) }
+    single { botCommands(get()) }
     single { setWebhook(get()) }
     single { NASAPicOnSpringBot(get(), get(), get<TelegramConfig>().errorText, get<TelegramConfig>().botPath, { get<SetWebhook>() }) }
 }
@@ -89,12 +89,11 @@ fun userRepository(): UserRepository = UserRepository(
 
 fun httpClient(): OkHttpClient = OkHttpClient.Builder().build()
 
-fun createBotCommands(telegramConfig: TelegramConfig, telegramClient: TelegramClient) {
-    val setMyCommands: SetMyCommands = SetMyCommands.builder()
+fun botCommands(telegramConfig: TelegramConfig): SetMyCommands {
+    return SetMyCommands.builder()
         .commands(telegramConfig.listOfCommands)
         .scope(BotCommandScopeDefault()) // глобально для всех
         .build()
-    telegramClient.execute(setMyCommands)
 }
 
 fun withTranslate(properties: Map<String, Any>) = properties["translate"] as Boolean

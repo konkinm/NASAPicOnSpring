@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.koin.core.context.GlobalContext
 import org.koin.core.context.GlobalContext.startKoin
 import org.slf4j.LoggerFactory
+import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands
 import org.telegram.telegrambots.meta.api.objects.Update
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 import org.telegram.telegrambots.meta.generics.TelegramClient
@@ -27,6 +28,8 @@ class Handler: YcFunction<QueueMessage, String> {
         val nasaPicOnSpringBot = GlobalContext.get().get<NASAPicOnSpringBot>()
         log.debug("Instantiating telegram client...")
         val telegramClient = GlobalContext.get().get<TelegramClient>()
+        log.debug("setting bot commands...")
+        telegramClient.execute(GlobalContext.get().get<SetMyCommands>())
         log.debug("Done.")
         val mapper = GlobalContext.get().get<ObjectMapper>()
         val token = if (context?.tokenJson != null) mapper.readValue(context.tokenJson, Token::class.java) else null
