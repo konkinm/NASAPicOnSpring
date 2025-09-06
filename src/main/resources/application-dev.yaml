@@ -1,6 +1,6 @@
 telegram:
   api-url: "https://api.telegram.org/"
-  bot-name: "NASAPic_bot"
+  bot-name: "SimpleEchoWebhook_Bot"
   bot-token: "${BOT_TOKEN}"
   webhook-path: "https://d5dj50vasu6408s7di12.apigw.yandexcloud.net"
   bot-path: ""

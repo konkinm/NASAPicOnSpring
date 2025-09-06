@@ -21,6 +21,7 @@ class NASAPicOnSpringBot(
     private val userService: UserService,
     private val errorText: String,
     private val botPath: String,
+    private val botName: String,
     private val setWebhook: Runnable? = null,
     private val deleteWebhook: Runnable? = null
 ) : TelegramWebhookBot {
@@ -39,6 +40,18 @@ class NASAPicOnSpringBot(
 
     override fun getBotPath(): String? {
         return botPath
+    }
+
+    private fun stripBotNameFromCommand(command: String): String {
+        if (command.contains("@")) {
+            val atIndex = command.indexOf('@')
+            val botNameInCommand = command.substring(atIndex + 1)
+            // Only strip the bot name if it matches our bot name (case-insensitive)
+            if (botNameInCommand.equals(botName, ignoreCase = true)) {
+                return command.substring(0, atIndex)
+            }
+        }
+        return command
     }
 
     fun handleUpdate(update: Update, token: Token?): SendMessage? {
@@ -74,7 +87,8 @@ class NASAPicOnSpringBot(
                         sendMessage("Неверный формат даты.\nВведите дату в формате <b>YYYY-MM-DD</b>", chatId)
                     }
                 } else {
-                    return when (text) {
+                    val processedText = stripBotNameFromCommand(text)
+                    return when (processedText) {
                         "/start", "/help" -> {
                             sendMessage(HELP_TEXT, chatId)
                         }

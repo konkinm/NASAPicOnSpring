@@ -71,7 +71,7 @@ val bot = module {
 
     single { botCommands(get()) }
     single { setWebhook(get()) }
-    single { NASAPicOnSpringBot(get(), get(), get<TelegramConfig>().errorText, get<TelegramConfig>().botPath, { get<SetWebhook>() }) }
+    single { NASAPicOnSpringBot(get(), get(), get<TelegramConfig>().errorText, get<TelegramConfig>().botPath, get<TelegramConfig>().botName, { get<SetWebhook>() }) }
 }
 
 fun setWebhook(telegramConfig: TelegramConfig): SetWebhook =
