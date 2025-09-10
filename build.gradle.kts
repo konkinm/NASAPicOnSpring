@@ -67,6 +67,7 @@ dependencies {
 
     // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.12.2")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 }
 
 java {

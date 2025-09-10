@@ -18,6 +18,7 @@ import space.maxkonkin.nasapicbot.config.PropertiesLoader.loadProperties
 import space.maxkonkin.nasapicbot.repository.EntityManager
 import space.maxkonkin.nasapicbot.repository.NasaRowTableRepository
 import space.maxkonkin.nasapicbot.repository.UserRepository
+import space.maxkonkin.nasapicbot.service.MessageService
 import space.maxkonkin.nasapicbot.service.NasaService
 import space.maxkonkin.nasapicbot.service.TranslateService
 import space.maxkonkin.nasapicbot.service.UserService
@@ -43,6 +44,7 @@ val utils = module {
     }
     single { httpClient() }
     single { telegramClient(get()) }
+    single { MessageService() }
 }
 
 val translate = module {
@@ -71,7 +73,7 @@ val bot = module {
 
     single { botCommands(get()) }
     single { setWebhook(get()) }
-    single { NASAPicOnSpringBot(get(), get(), get<TelegramConfig>().errorText, get<TelegramConfig>().botPath, get<TelegramConfig>().botName, { get<SetWebhook>() }) }
+    single { NASAPicOnSpringBot(get(), get(), get(), get<TelegramConfig>().botPath, get<TelegramConfig>().botName, { get<SetWebhook>() }) }
 }
 
 fun setWebhook(telegramConfig: TelegramConfig): SetWebhook =

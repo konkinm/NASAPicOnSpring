@@ -49,7 +49,7 @@ fun cloneWithReplacedUrl(to: NasaTo, newUrl: String): NasaTo {
     )
 }
 
-fun getFormattedMessage(nasaTo: NasaTo): String {
+fun getFormattedMessage(nasaTo: NasaTo, postedOnI18n: String): String {
     val url = nasaTo.url
     val hdUrl = nasaTo.hdUrl
     val mediaType = nasaTo.mediaType
@@ -68,7 +68,7 @@ fun getFormattedMessage(nasaTo: NasaTo): String {
             .append("HD")
             .append("</a>")
     }
-    message.append("\n(Posted on ")
+    message.append("\n($postedOnI18n ")
         .append(nasaTo.date)
         .append(")\n\n")
         .append(nasaTo.explanation)

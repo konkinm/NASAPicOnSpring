@@ -6,9 +6,6 @@ telegram:
   bot-path: ""
 server:
   port: "80"
-message:
-  errorText:
-    text: "Команда не поддерживается."
 translate: true #global translate option
 yandex-api:
   api-url: "https://translate.api.cloud.yandex.net/translate/v2/translate"

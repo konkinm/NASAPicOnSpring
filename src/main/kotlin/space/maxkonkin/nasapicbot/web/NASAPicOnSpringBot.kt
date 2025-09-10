@@ -8,6 +8,7 @@ import space.maxkonkin.nasapicbot.exception.UserNotFoundException
 import space.maxkonkin.nasapicbot.model.LangCode
 import space.maxkonkin.nasapicbot.model.Token
 import space.maxkonkin.nasapicbot.model.User
+import space.maxkonkin.nasapicbot.service.MessageService
 import space.maxkonkin.nasapicbot.service.NasaService
 import space.maxkonkin.nasapicbot.service.UserService
 import space.maxkonkin.nasapicbot.to.NasaTo
@@ -19,7 +20,7 @@ import java.util.regex.Pattern
 class NASAPicOnSpringBot(
     private val nasaService: NasaService,
     private val userService: UserService,
-    private val errorText: String,
+    private val messageService: MessageService,
     private val botPath: String,
     private val botName: String,
     private val setWebhook: Runnable? = null,
@@ -46,7 +47,6 @@ class NASAPicOnSpringBot(
         if (command.contains("@")) {
             val atIndex = command.indexOf('@')
             val botNameInCommand = command.substring(atIndex + 1)
-            // Only strip the bot name if it matches our bot name (case-insensitive)
             if (botNameInCommand.equals(botName, ignoreCase = true)) {
                 return command.substring(0, atIndex)
             }
@@ -78,19 +78,19 @@ class NASAPicOnSpringBot(
                             givePostedOnDatePicture(date, user)
                         } else {
                             sendMessage(
-                                "Введённая дата должна быть не раньше 1995-06-20 и не позже сегодняшней даты",
+                                messageService.getMessage("error.invalid_date_range", user.locale()),
                                 chatId
                             )
                         }
                     } catch (e: Exception) {
                         System.err.println("Parsing error! " + e.message)
-                        sendMessage("Неверный формат даты.\nВведите дату в формате <b>YYYY-MM-DD</b>", chatId)
+                        sendMessage(messageService.getMessage("error.invalid_date_format", user.locale()), chatId)
                     }
                 } else {
                     val processedText = stripBotNameFromCommand(text)
                     return when (processedText) {
                         "/start", "/help" -> {
-                            sendMessage(HELP_TEXT, chatId)
+                            sendMessage(messageService.getMessage("help.text", user.locale()), chatId)
                         }
 
                         "/today" -> {
@@ -110,7 +110,7 @@ class NASAPicOnSpringBot(
                         }
 
                         else -> {
-                            sendMessage(errorText, chatId)
+                            sendMessage(messageService.getMessage("error.unsupported_command", user.locale()), chatId)
                         }
                     }
                 }
@@ -121,23 +121,23 @@ class NASAPicOnSpringBot(
 
     private fun giveRandomPicture(user: User): SendMessage {
         val random = nasaService.getRandom(user)
-        return sendFormattedMessage(requireNotNull(random) { "Unable to send message" }, user.chatId)
+        return sendFormattedMessage(user, requireNotNull(random) { "Unable to send message" }, user.chatId)
     }
 
     fun giveTodayPicture(user: User): SendMessage {
         val today = nasaService.getToday(user)
-        return sendFormattedMessage(requireNotNull(today) { "Unable to send message" }, user.chatId)
+        return sendFormattedMessage(user, requireNotNull(today) { "Unable to send message" }, user.chatId)
     }
 
     private fun givePostedOnDatePicture(date: LocalDate, user: User): SendMessage {
         val onDate = nasaService.getOnDate(date, user)
-        return sendFormattedMessage(requireNotNull(onDate) { "Unable to send message" }, user.chatId)
+        return sendFormattedMessage(user, requireNotNull(onDate) { "Unable to send message" }, user.chatId)
     }
 
     private fun toggleSchedule(user: User, token: Token?): SendMessage {
         val isScheduled = !user.isScheduled
         userService.updateSchedule(user.copy(isScheduled = isScheduled), token)
-        return sendMessage("Schedule was updated: ${if (isScheduled) "on" else "off"}", user.chatId)
+        return sendMessage(messageService.getScheduleMessage(isScheduled, user.locale()), user.chatId)
     }
 
     private fun toggleTranslate(
@@ -150,11 +150,12 @@ class NASAPicOnSpringBot(
             user.copy(translateLangCode = targetLang)
         }
         userService.update(updatedUser)
-        return sendMessage("Translation was ${if (updatedUser.translateLangCode != LangCode.EN) "enabled" else "disabled"}", updatedUser.chatId)
+        val isEnabled = updatedUser.translateLangCode != LangCode.EN
+        return sendMessage(messageService.getTranslationMessage(isEnabled, updatedUser.locale()), updatedUser.chatId)
     }
 
-    private fun sendFormattedMessage(nasaTo: NasaTo, chatId: Long): SendMessage {
-        return sendMessage(getFormattedMessage(nasaTo), chatId)
+    private fun sendFormattedMessage(user: User, nasaTo: NasaTo, chatId: Long): SendMessage {
+        return sendMessage(getFormattedMessage(nasaTo, messageService.getMessage("message.posted_on", user.locale())), chatId)
     }
 
     private fun sendMessage(messageText: String, chatId: Long): SendMessage {
@@ -165,13 +166,8 @@ class NASAPicOnSpringBot(
             .build()
         return message
     }
+    
+    private fun User.locale(): String {
+        return translateLangCode.code
+    }
 }
-
-const val HELP_TEXT = """
-            Привет, я бот NASA! Я высылаю ссылки на картинки (или видео) с описанием по запросу. Введи команду:
-            /today чтобы получить сегодняшнюю картинку;
-            /random чтобы получить случайную картинку.
-            Либо введи дату в формате <b>YYYY-MM-DD</b> и я пришлю ссылку на картинку с описанием, опубликованную в тот день.
-            Дата должна быть не раньше 1995-06-20!
-            Напоминаю, что картинки на сайте NASA обновляются раз в сутки.
-            """

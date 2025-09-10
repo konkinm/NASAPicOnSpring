@@ -9,7 +9,6 @@ fun loadTelegramConfig(properties: Map<String, Any>): TelegramConfig {
         botToken = System.getenv("BOT_TOKEN"),
         webhookPath = requireNotNull((properties["telegram"] as Map<*, *>)["webhook-path"]) as String,
         botName = requireNotNull((properties["telegram"] as Map<*, *>)["bot-name"]) as String,
-        errorText = requireNotNull((properties["message"] as Map<*, *>)["error-text"]) as String,
         listOfCommands = listOfCommands
     )
 }
@@ -19,7 +18,6 @@ data class TelegramConfig(
     val botToken: String,
     val webhookPath: String,
     val botName: String,
-    val errorText: String,
     val listOfCommands: List<BotCommand>
 )
 

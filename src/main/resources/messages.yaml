@@ -1,0 +1,58 @@
+# Bot messages for localization
+ru:
+  help:
+    text: |
+      Привет, я бот NASA! Я высылаю ссылки на картинки (или видео) с описанием по запросу. Введи команду:
+      /today чтобы получить сегодняшнюю картинку;
+      /random чтобы получить случайную картинку.
+      Либо введи дату в формате <b>YYYY-MM-DD</b> и я пришлю ссылку на картинку с описанием, опубликованную в тот день.
+      Дата должна быть не раньше 1995-06-20!
+      Напоминаю, что картинки на сайте NASA обновляются раз в сутки.
+  error:
+    unsupported_command: "Команда не поддерживается."
+    invalid_date_range: "Введённая дата должна быть не раньше 1995-06-20 и не позже сегодняшней даты"
+    invalid_date_format: "Неверный формат даты.\nВведите дату в формате <b>YYYY-MM-DD</b>"
+  schedule:
+    updated_on: "Отправка по расписанию: вкл"
+    updated_off: "Отправка по расписанию: выкл"
+  translation:
+    enabled: "Перевод включен"
+    disabled: "Перевод выключен"
+  commands:
+    start_description: "Получить описание"
+    help_description: "Получить описание"
+    today_description: "Скинуть сегодняшнюю картинку"
+    random_description: "Скинуть случайную картинку"
+    schedule_description: "Переключить отправку сегодняшней картинки по расписанию"
+    translate_description: "Переключить перевод EN->RU"
+  message:
+    posted_on: "Опубликовано"
+
+en:
+  help:
+    text: |
+      Hi, I'm a NASA bot! I send links to pictures (or videos) with descriptions on request. Enter a command:
+      /today to get today's picture;
+      /random to get a random picture.
+      Or enter a date in the format <b>YYYY-MM-DD</b> and I will send a link to the picture with a description published on that day.
+      The date must be no earlier than 1995-06-20!
+      Remember that the pictures on the NASA website are updated once a day.
+  error:
+    unsupported_command: "Command not supported."
+    invalid_date_range: "The entered date must be no earlier than 1995-06-20 and no later than today's date"
+    invalid_date_format: "Invalid date format.\nEnter the date in the format <b>YYYY-MM-DD</b>"
+  schedule:
+    updated_on: "Schedule was updated: on"
+    updated_off: "Schedule was updated: off"
+  translation:
+    enabled: "Translation was enabled"
+    disabled: "Translation was disabled"
+  commands:
+    start_description: "Get description"
+    help_description: "Get description"
+    today_description: "Send today's picture"
+    random_description: "Send a random picture"
+    schedule_description: "Toggle sending today's picture on schedule"
+    translate_description: "Toggle translation EN->RU"
+  message:
+    posted_on: "Posted on"
