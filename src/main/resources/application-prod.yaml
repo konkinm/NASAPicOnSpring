@@ -11,12 +11,15 @@ yandex-api:
   api-url: "https://translate.api.cloud.yandex.net/translate/v2/translate"
   folder-id: "b1gh84dl01a0jkghcf9b"
   api-token: "${YA_API_TOKEN}"
+  trigger-api-url: "https://serverless-triggers.api.cloud.yandex.net/triggers/v1/triggers"
+  service-account-id: "aje8t3djnleto3eq67r0"
+  trigger-function-id: "d4e9pi9ds1httb471bcg"
 apod:
   api-url: "https://apod.ellanan.com/api"
 
 logging:
   level:
-    root: INFO
+    root: WARN
     org.springframework: ERROR
     space.maxkonkin.nasapicbot: ERROR
   pattern:
