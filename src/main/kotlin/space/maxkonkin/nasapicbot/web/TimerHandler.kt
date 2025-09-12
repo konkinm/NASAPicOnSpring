@@ -40,7 +40,7 @@ fun handle(timerMessage: TimerMessage): String {
                 log.info("Message not sent. Scheduling is off for user with chat_id=${user.chatId}")
             }
         } else {
-            log.error("Message not sent. User with chat_id=$payload not found")
+            throw RuntimeException("Message not sent. User with chat_id=$payload not found")
         }
         "OK"
     } catch (e: Exception) {
