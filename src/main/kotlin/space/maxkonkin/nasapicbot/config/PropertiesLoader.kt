@@ -6,7 +6,7 @@ import java.io.InputStream
 
 object PropertiesLoader {
     fun loadProperties(): Map<String, Any> {
-        val resourcePath = "/application-${System.getenv("SPRING_PROFILE")}.yaml"
+        val resourcePath = "/application-${System.getenv("PROFILE")}.yaml"
         val inputStream: InputStream = this::class.java.getResourceAsStream(resourcePath)
             ?: throw FileNotFoundException("Resource not found: $resourcePath")
         

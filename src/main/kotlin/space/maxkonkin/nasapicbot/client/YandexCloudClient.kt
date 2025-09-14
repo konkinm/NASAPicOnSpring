@@ -33,7 +33,7 @@ class YandexCloudClient(
             val body = mapper.writeValueAsString(
                 Trigger(
                     config.folderId,
-                    "nasapic-schedule-$chatId",
+                    "nasapic-schedule-${System.getenv("PROFILE")}-$chatId",
                     Rule(
                         Timer(
                             payload = chatId,
