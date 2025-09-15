@@ -5,14 +5,14 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
-import space.maxkonkin.nasapicbot.config.YandexApiConfig
+import space.maxkonkin.nasapicbot.config.YandexCloudConfig
 import space.maxkonkin.nasapicbot.to.InvokeFunction
 import space.maxkonkin.nasapicbot.to.Rule
 import space.maxkonkin.nasapicbot.to.Timer
 import space.maxkonkin.nasapicbot.to.Trigger
 
 class YandexCloudClient(
-    private val config: YandexApiConfig,
+    private val config: YandexCloudConfig,
     private val mapper: ObjectMapper,
     private val httpClient: OkHttpClient
 ) {

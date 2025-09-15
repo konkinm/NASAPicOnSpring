@@ -27,7 +27,7 @@ import space.maxkonkin.nasapicbot.web.NASAPicOnSpringBot
 val config = module {
     single { loadProperties() }
     single { loadTelegramConfig(get()) }
-    single { loadYandexTranslateConfig(get()) }
+    single { loadYandexCloudConfig(get()) }
     single { loadNasaAPIConfig(get()) }
 }
 
@@ -45,6 +45,7 @@ val utils = module {
     single { httpClient() }
     single { telegramClient(get()) }
     single { MessageService() }
+    single { EntityManager(get()) }
 }
 
 val translate = module {
@@ -57,13 +58,13 @@ val translate = module {
 val nasa = module {
     includes(translate)
 
-    single { nasaRowTableRepository() }
+    single { NasaRowTableRepository(get(), get()) }
     single { NasaApiClient(get(), get(), get()) }
     single { NasaService(get(), get(), get(), withTranslate(get()))}
 }
 
 val user = module {
-    single { userRepository() }
+    single { UserRepository(get(), get()) }
     single { YandexCloudClient(get(), get(), get()) }
     single { UserService(get(), get()) }
 }
@@ -82,19 +83,12 @@ fun setWebhook(telegramConfig: TelegramConfig): SetWebhook =
 fun telegramClient(telegramConfig: TelegramConfig): TelegramClient =
     OkHttpTelegramClient(telegramConfig.botToken)
 
-fun nasaRowTableRepository(): NasaRowTableRepository = NasaRowTableRepository(System.getenv("TABLE_NAME"))
-
-fun userRepository(): UserRepository = UserRepository(
-    System.getenv("USER_TABLE_NAME"),
-    EntityManager(System.getenv("DATABASE"), System.getenv("ENDPOINT"))
-)
-
 fun httpClient(): OkHttpClient = OkHttpClient.Builder().build()
 
 fun botCommands(telegramConfig: TelegramConfig): SetMyCommands {
     return SetMyCommands.builder()
         .commands(telegramConfig.listOfCommands)
-        .scope(BotCommandScopeDefault()) // глобально для всех
+        .scope(BotCommandScopeDefault())
         .build()
 }
 

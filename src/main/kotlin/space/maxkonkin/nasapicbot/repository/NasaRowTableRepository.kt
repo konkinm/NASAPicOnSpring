@@ -1,5 +1,6 @@
 package space.maxkonkin.nasapicbot.repository
 
+import space.maxkonkin.nasapicbot.config.YandexCloudConfig
 import space.maxkonkin.nasapicbot.model.LangCode
 import space.maxkonkin.nasapicbot.model.Nasa
 import space.maxkonkin.nasapicbot.util.ThrowingConsumer
@@ -8,13 +9,11 @@ import tech.ydb.table.query.Params
 import tech.ydb.table.values.PrimitiveValue
 import java.time.LocalDate
 
-class NasaRowTableRepository(private val tableName: String) {
-    private val entityManager: EntityManager =
-        EntityManager(System.getenv("DATABASE"), System.getenv("ENDPOINT"))
+class NasaRowTableRepository(private val config: YandexCloudConfig, private val entityManager: EntityManager) {
 
     fun getAll(): List<Nasa> {
         val nasaList: MutableList<Nasa> = ArrayList()
-        entityManager.execute("SELECT * FROM $tableName", Params.empty(),
+        entityManager.execute("SELECT * FROM ${config.ydbNasaTable}", Params.empty(),
             ThrowingConsumer.unchecked<DataQueryResult, RuntimeException> { result ->
                 val resultSet = result.getResultSet(0)
                 while (resultSet.next()) {
@@ -29,8 +28,8 @@ class NasaRowTableRepository(private val tableName: String) {
         entityManager.execute("DECLARE \$localDate AS Date;" +
                 "DECLARE \$langCode AS Utf8;" +
                 "SELECT date, lang, credit, copyright, explanation, title, url, hd_url, media_type " +
-                "FROM " + tableName +
-                " WHERE date = \$localDate AND lang = \$langCode",
+                "FROM ${config.ydbNasaTable} " +
+                "WHERE date = \$localDate AND lang = \$langCode",
             Params.of(
                 "\$localDate", PrimitiveValue.newDate(date),
                 "\$langCode", PrimitiveValue.newText(langCode.code)
@@ -54,24 +53,19 @@ class NasaRowTableRepository(private val tableName: String) {
                 "DECLARE \$url AS Utf8;" +
                 "DECLARE \$hd_url AS Utf8;" +
                 "DECLARE \$media_type AS Utf8;" +
-                "INSERT INTO " + tableName + " (date, lang, credit, copyright, explanation, title, url, " +
+                "INSERT INTO ${config.ydbNasaTable} (date, lang, credit, copyright, explanation, title, url, " +
                 "hd_url, media_type)" +
                 "VALUES (\$localDate, \$lang, \$credit, \$copyright, \$explanation, \$title, \$url, \$hd_url, " +
                 "\$media_type)"
-        val credit = nasa.credit ?: ""
-        val copyright = nasa.copyright ?: ""
-        val explanation = nasa.explanation ?: ""
-        val title = nasa.title ?: ""
-        val hdUrl = nasa.hdUrl ?: ""
         val params = Params.of(
             "\$localDate", PrimitiveValue.newDate(nasa.date),
             "\$lang", PrimitiveValue.newText(nasa.langCode?.code),
-            "\$credit", PrimitiveValue.newText(credit),
-            "\$copyright", PrimitiveValue.newText(copyright),
-            "\$explanation", PrimitiveValue.newText(explanation),
-            "\$title", PrimitiveValue.newText(title),
-            "\$url", PrimitiveValue.newText(nasa.url),
-            "\$hd_url", PrimitiveValue.newText(hdUrl),
+            "\$credit", PrimitiveValue.newText(nasa.credit ?: ""),
+            "\$copyright", PrimitiveValue.newText(nasa.copyright ?: ""),
+            "\$explanation", PrimitiveValue.newText(nasa.explanation ?: ""),
+            "\$title", PrimitiveValue.newText(nasa.title ?: ""),
+            "\$url", PrimitiveValue.newText(nasa.url ?: ""),
+            "\$hd_url", PrimitiveValue.newText(nasa.hdUrl ?: ""),
             "\$media_type", PrimitiveValue.newText(nasa.mediaType)
         )
         entityManager.execute(query, params)
@@ -87,7 +81,7 @@ class NasaRowTableRepository(private val tableName: String) {
                 "DECLARE \$url AS Utf8;" +
                 "DECLARE \$hd_url AS Utf8;" +
                 "DECLARE \$media_type AS Utf8;" +
-                "UPSERT INTO " + tableName + " (date, lang, credit, copyright, explanation, title, url, " +
+                "UPSERT INTO ${config.ydbNasaTable} (date, lang, credit, copyright, explanation, title, url, " +
                 "hd_url, media_type, service_version)" +
                 "VALUES (\$localDate, \$lang, \$credit, \$copyright, \$explanation, \$title, \$url, \$hd_url, " +
                 "\$media_type)"
@@ -108,7 +102,7 @@ class NasaRowTableRepository(private val tableName: String) {
     fun deleteByDate(date: LocalDate) {
         entityManager.execute(
             "DECLARE \$localDate AS Date;" +
-                    "DELETE FROM " + tableName + " WHERE date = \$localDate",
+                    "DELETE FROM ${config.ydbNasaTable} WHERE date = \$localDate",
             Params.of("\$localDate", PrimitiveValue.newDate(date))
         )
     }

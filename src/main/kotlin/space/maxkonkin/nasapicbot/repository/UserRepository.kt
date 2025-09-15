@@ -1,5 +1,6 @@
 package space.maxkonkin.nasapicbot.repository
 
+import space.maxkonkin.nasapicbot.config.YandexCloudConfig
 import space.maxkonkin.nasapicbot.model.User
 import space.maxkonkin.nasapicbot.util.ThrowingConsumer
 import tech.ydb.table.query.DataQueryResult
@@ -7,13 +8,13 @@ import tech.ydb.table.query.Params
 import tech.ydb.table.values.PrimitiveValue
 
 class UserRepository(
-    private val tableName: String,
+    private val config: YandexCloudConfig,
     private val entityManager: EntityManager
 ) : Repository<User> {
 
     override fun getAll(): List<User> {
         val users = ArrayList<User>()
-        entityManager.execute("SELECT * FROM $tableName", Params.empty(),
+        entityManager.execute("SELECT * FROM ${config.ydbUserTable}", Params.empty(),
             ThrowingConsumer.unchecked<DataQueryResult, RuntimeException> { result ->
                 val resultSet = result.getResultSet(0)
                 while (resultSet.next()) {
@@ -26,7 +27,7 @@ class UserRepository(
     override fun getById(id: Long): User? {
         val users = ArrayList<User>()
         entityManager.execute("DECLARE \$chat_id AS Uint64; " +
-                "SELECT chat_id, name, is_scheduled, translate_lang_code, trigger_id FROM $tableName " +
+                "SELECT chat_id, name, is_scheduled, translate_lang_code, trigger_id FROM ${config.ydbUserTable} " +
                 "WHERE chat_id = \$chat_id",
             Params.of("\$chat_id", PrimitiveValue.newUint64(id)),
             ThrowingConsumer.unchecked<DataQueryResult, RuntimeException> { result ->
@@ -43,7 +44,7 @@ class UserRepository(
                 "DECLARE \$name AS Utf8;" +
                 "DECLARE \$is_scheduled AS Bool;" +
                 "DECLARE \$translate_lang_code AS Utf8;" +
-                "INSERT INTO $tableName (chat_id, name, is_scheduled, translate_lang_code) " +
+                "INSERT INTO ${config.ydbUserTable} (chat_id, name, is_scheduled, translate_lang_code) " +
                 "VALUES (\$chat_id, \$name, \$is_scheduled,  \$translate_lang_code)"
         val params = Params.of(
             "\$chat_id", PrimitiveValue.newUint64(entity.chatId),
@@ -60,7 +61,7 @@ class UserRepository(
                 "DECLARE \$is_scheduled AS Bool;" +
                 "DECLARE \$translate_lang_code AS Utf8;" +
                 "DECLARE \$trigger_id AS Utf8;" +
-                "UPSERT INTO $tableName (chat_id, name, is_scheduled, translate_lang_code, trigger_id) " +
+                "UPSERT INTO ${config.ydbUserTable} (chat_id, name, is_scheduled, translate_lang_code, trigger_id) " +
                 "VALUES (\$chat_id, \$name, \$is_scheduled, \$translate_lang_code, \$trigger_id)"
         val params = Params.of(
             "\$chat_id", PrimitiveValue.newUint64(entity.chatId),
@@ -75,7 +76,7 @@ class UserRepository(
     override fun deleteById(chatId: Long) {
         entityManager.execute(
             "DECLARE \$chat_id as Uint64;" +
-                    "DELETE FROM $tableName WHERE chat_id = \$chat_id",
+                    "DELETE FROM ${config.ydbUserTable} WHERE chat_id = \$chat_id",
             Params.of("\$chat_id", PrimitiveValue.newUint64(chatId))
         )
     }

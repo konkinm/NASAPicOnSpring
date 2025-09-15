@@ -1,7 +1,6 @@
 telegram:
   api-url: "https://api.telegram.org/"
   bot-name: "NASAPic_bot"
-  bot-token: "${BOT_TOKEN}"
   webhook-path: "https://d5dob1n2uv2ss0qvgb76.apigw.yandexcloud.net"
   bot-path: ""
 server:
@@ -14,6 +13,10 @@ yandex-api:
   trigger-api-url: "https://serverless-triggers.api.cloud.yandex.net/triggers/v1/triggers"
   service-account-id: "aje8t3djnleto3eq67r0"
   trigger-function-id: "d4e9pi9ds1httb471bcg"
+ydb:
+  endpoint: "grpcs://ydb.serverless.yandexcloud.net:2135"
+  user-table: "nasapic_users"
+  nasa-table: "nasapic_row_storage"
 apod:
   api-url: "https://apod.ellanan.com/api"
 

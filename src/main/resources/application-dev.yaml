@@ -1,7 +1,6 @@
 telegram:
   api-url: "https://api.telegram.org/"
   bot-name: "SimpleEchoWebhook_Bot"
-  bot-token: "${BOT_TOKEN}"
   webhook-path: "https://d5dj50vasu6408s7di12.apigw.yandexcloud.net"
   bot-path: ""
 server:
@@ -14,6 +13,10 @@ yandex-api:
   trigger-api-url: "https://serverless-triggers.api.cloud.yandex.net/triggers/v1/triggers"
   service-account-id: "aje8t3djnleto3eq67r0"
   trigger-function-id: "d4ehha2843gdutijgplp"
+ydb:
+  endpoint: "grpcs://ydb.serverless.yandexcloud.net:2135"
+  user-table: "nasapic_users_test"
+  nasa-table: "nasapic_row_storage_test"
 apod:
   api-url: "https://apod.ellanan.com/api"
 

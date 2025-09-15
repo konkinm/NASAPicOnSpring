@@ -6,11 +6,11 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
-import space.maxkonkin.nasapicbot.config.YandexApiConfig
+import space.maxkonkin.nasapicbot.config.YandexCloudConfig
 import space.maxkonkin.nasapicbot.model.LangCode
 
 class YandexTranslateApiClient(
-    private val config: YandexApiConfig,
+    private val config: YandexCloudConfig,
     private val mapper: ObjectMapper,
     private val httpClient: OkHttpClient
 ) {
