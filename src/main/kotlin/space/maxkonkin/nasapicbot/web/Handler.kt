@@ -40,9 +40,14 @@ class Handler: YcFunction<QueueMessage, String> {
             val update = mapper.readValue(messages.first().details?.message?.body, Update::class.java)
             log.debug("Update: ${mapper.writeValueAsString(update)}")
             val sendMessage = nasaPicOnSpringBot.handleUpdate(update, token)
-            telegramClient.execute(sendMessage)
-            log.info("Message sent to chat_id=${sendMessage?.chatId}")
-            "OK"
+            if (sendMessage != null) {
+                telegramClient.execute(sendMessage)
+                log.info("Message sent to chat_id=${sendMessage.chatId}")
+                "OK"
+            } else {
+                log.info("Message not sent. sendMessage method returned null")
+                "SKIPPED"
+            }
         } catch (e: Exception) {
             when (e) {
                 is IOException, is TelegramApiException -> {

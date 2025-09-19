@@ -110,7 +110,14 @@ class NASAPicOnSpringBot(
                         }
 
                         else -> {
-                            sendMessage(messageService.getMessage("error.unsupported_command", user.locale()), chatId)
+                            if (update.message.isReply.not())
+                                sendMessage(
+                                    messageService.getMessage(
+                                        "error.unsupported_command",
+                                        user.locale()
+                                    ), chatId
+                                )
+                            else null
                         }
                     }
                 }
@@ -155,7 +162,10 @@ class NASAPicOnSpringBot(
     }
 
     private fun sendFormattedMessage(user: User, nasaTo: NasaTo, chatId: Long): SendMessage {
-        return sendMessage(getFormattedMessage(nasaTo, messageService.getMessage("message.posted_on", user.locale())), chatId)
+        return sendMessage(
+            getFormattedMessage(nasaTo, messageService.getMessage("message.posted_on", user.locale())),
+            chatId
+        )
     }
 
     private fun sendMessage(messageText: String, chatId: Long): SendMessage {
@@ -166,7 +176,7 @@ class NASAPicOnSpringBot(
             .build()
         return message
     }
-    
+
     private fun User.locale(): String {
         return translateLangCode.code
     }
