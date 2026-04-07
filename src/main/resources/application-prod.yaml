@@ -1,25 +1,28 @@
 telegram:
   api-url: "https://api.telegram.org/"
   bot-name: "NASAPic_bot"
-  bot-token: "${BOT_TOKEN}"
   webhook-path: "https://d5dob1n2uv2ss0qvgb76.apigw.yandexcloud.net"
   bot-path: ""
 server:
   port: "80"
-message:
-  errorText:
-    text: "Почему-то не сработало."
-translate: false
+translate: true #global translate option
 yandex-api:
   api-url: "https://translate.api.cloud.yandex.net/translate/v2/translate"
   folder-id: "b1gh84dl01a0jkghcf9b"
   api-token: "${YA_API_TOKEN}"
+  trigger-api-url: "https://serverless-triggers.api.cloud.yandex.net/triggers/v1/triggers"
+  service-account-id: "aje8t3djnleto3eq67r0"
+  trigger-function-id: "d4e9pi9ds1httb471bcg"
+ydb:
+  endpoint: "grpcs://ydb.serverless.yandexcloud.net:2135"
+  user-table: "nasapic_users"
+  nasa-table: "nasapic_row_storage"
 apod:
   api-url: "https://apod.ellanan.com/api"
 
 logging:
   level:
-    root: INFO
+    root: WARN
     org.springframework: ERROR
     space.maxkonkin.nasapicbot: ERROR
   pattern:

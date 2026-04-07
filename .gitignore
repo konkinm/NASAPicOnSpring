@@ -5,10 +5,14 @@
 *.ipr
 *.zip
 
+.gradle/
+gradle/
+gradlew
+gradlew.bat
+build/
 target/
 log/
 /ngrok.bat
 /before_deploy.txt
-/deploy_dev.cmd
-/deploy_prod.cmd
+deploy_*
 /authorized_key.json
