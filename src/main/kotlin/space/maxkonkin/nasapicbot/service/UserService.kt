@@ -2,6 +2,7 @@ package space.maxkonkin.nasapicbot.service
 
 import org.slf4j.LoggerFactory
 import space.maxkonkin.nasapicbot.client.YandexCloudClient
+import space.maxkonkin.nasapicbot.model.ScheduleState
 import space.maxkonkin.nasapicbot.model.Token
 import space.maxkonkin.nasapicbot.model.User
 import space.maxkonkin.nasapicbot.repository.UserRepository
@@ -38,22 +39,26 @@ class UserService(
         repository.update(user)
     }
 
-    fun updateSchedule(user: User, token: Token?) {
-        log.info("updating user schedule with chat_id={}", user.chatId)
-        if (token != null ) {
-            if (cloudClient.isTriggerCreated(user.triggerId, token.token)) {
-                if (user.isScheduled) {
+    fun toggleSchedule(user: User, token: Token?): ScheduleState {
+        log.info("toggling schedule for user with chat_id={}", user.chatId)
+        val newState = user.scheduleState.toggle()
+        if (token != null) {
+            when (newState) {
+                ScheduleState.ACTIVE -> if (user.triggerId != null) {
                     cloudClient.resumeTrigger(user.triggerId, token.token)
+                    repository.update(user.copy(scheduleState = newState))
                 } else {
-                    cloudClient.pauseTrigger(user.triggerId, token.token)
+                    val triggerId = cloudClient.createTrigger(user.chatId.toString(), token.token)
+                    repository.update(user.copy(scheduleState = newState, triggerId = triggerId))
                 }
-                repository.update(user)
-            } else {
-                val triggerId = cloudClient.createTrigger(user.chatId.toString(), token.token)
-                if (user.isScheduled.not()) cloudClient.pauseTrigger(triggerId, token.token)
-                repository.update(user.copy(triggerId = triggerId))
+                ScheduleState.PAUSED -> {
+                    cloudClient.pauseTrigger(requireNotNull(user.triggerId), token.token)
+                    repository.update(user.copy(scheduleState = newState))
+                }
+                ScheduleState.NONE -> {}
             }
         }
+        return newState
     }
 
     fun delete(user: User, token: Token) {

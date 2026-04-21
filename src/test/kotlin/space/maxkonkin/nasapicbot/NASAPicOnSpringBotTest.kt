@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test
 import org.telegram.telegrambots.meta.api.objects.message.Message
 import org.telegram.telegrambots.meta.api.objects.Update
 import space.maxkonkin.nasapicbot.model.LangCode
+import space.maxkonkin.nasapicbot.model.ScheduleState
 import space.maxkonkin.nasapicbot.model.User
 import space.maxkonkin.nasapicbot.service.MessageService
 import space.maxkonkin.nasapicbot.service.NasaService
@@ -27,7 +28,7 @@ class NASAPicOnSpringBotTest {
         botName = "TestBot"
     )
 
-    private val domainUser = User(100L, "testUser", false, LangCode.EN)
+    private val domainUser = User(100L, "testUser", ScheduleState.NONE, LangCode.EN)
     private val nasaTo = NasaTo(
         null, null, "2024-01-15", "Explanation",
         "https://hd.url", "image", "v1", "Title", "https://img.url"
@@ -126,15 +127,15 @@ class NASAPicOnSpringBotTest {
     }
 
     @Test
-    fun `schedule command toggles isScheduled from false to true and returns message`() {
-        every { userService.updateSchedule(any(), null) } just Runs
-        every { messageService.getScheduleMessage(true, "en") } returns "Schedule: on"
+    fun `schedule command toggles NONE to ACTIVE and returns enabled message`() {
+        every { userService.toggleSchedule(domainUser, null) } returns ScheduleState.ACTIVE
+        every { messageService.getScheduleMessage(ScheduleState.ACTIVE, "en") } returns "Schedule: on"
 
         val result = bot.handleUpdate(buildUpdate("/schedule"), null)
 
         assertNotNull(result)
         assertEquals("Schedule: on", result.text)
-        verify { userService.updateSchedule(domainUser.copy(isScheduled = true), null) }
+        verify { userService.toggleSchedule(domainUser, null) }
     }
 
     @Test

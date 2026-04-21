@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 import org.telegram.telegrambots.meta.generics.TelegramClient
 import space.maxkonkin.nasapicbot.config.bot
+import space.maxkonkin.nasapicbot.model.ScheduleState
 import space.maxkonkin.nasapicbot.model.TimerMessage
 import space.maxkonkin.nasapicbot.service.UserService
 import java.io.IOException
@@ -32,7 +33,7 @@ fun handle(timerMessage: TimerMessage): String {
         log.debug("Payload: {}", payload)
         val user = userService.getById(payload.toLong())
         if (user != null) {
-            if (user.isScheduled) {
+            if (user.scheduleState == ScheduleState.ACTIVE) {
                 val sendMessage = nasaPicOnSpringBot.giveTodayPicture(user)
                 telegramClient.execute(sendMessage)
                 log.info("Message sent to chat_id={}", sendMessage.chatId)

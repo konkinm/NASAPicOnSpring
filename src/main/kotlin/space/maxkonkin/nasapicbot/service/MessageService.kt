@@ -1,6 +1,7 @@
 package space.maxkonkin.nasapicbot.service
 
 import org.yaml.snakeyaml.Yaml
+import space.maxkonkin.nasapicbot.model.ScheduleState
 import java.io.InputStream
 
 class MessageService {
@@ -28,8 +29,8 @@ class MessageService {
         return current as? String ?: "Message not found: $key"
     }
     
-    fun getScheduleMessage(isScheduled: Boolean, locale: String = "ru"): String {
-        val key = if (isScheduled) "schedule.updated_on" else "schedule.updated_off"
+    fun getScheduleMessage(scheduleState: ScheduleState, locale: String = "ru"): String {
+        val key = if (scheduleState == ScheduleState.ACTIVE) "schedule.updated_on" else "schedule.updated_off"
         return getMessage(key, locale)
     }
     
