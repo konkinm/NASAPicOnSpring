@@ -1,6 +1,7 @@
 package space.maxkonkin.nasapicbot.service
 
 import org.junit.jupiter.api.Test
+import space.maxkonkin.nasapicbot.model.ScheduleState
 import kotlin.test.assertEquals
 
 class MessageServiceTest {
@@ -26,10 +27,10 @@ class MessageServiceTest {
     fun testGetScheduleMessage() {
         val messageService = MessageService()
         
-        val scheduleOn = messageService.getScheduleMessage(true, "ru")
+        val scheduleOn = messageService.getScheduleMessage(ScheduleState.ACTIVE, "ru")
         assertEquals("Отправка по расписанию: вкл", scheduleOn)
-        
-        val scheduleOff = messageService.getScheduleMessage(false, "ru")
+
+        val scheduleOff = messageService.getScheduleMessage(ScheduleState.PAUSED, "ru")
         assertEquals("Отправка по расписанию: выкл", scheduleOff)
     }
     

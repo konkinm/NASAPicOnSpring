@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test
 import space.maxkonkin.nasapicbot.client.NasaApiClient
 import space.maxkonkin.nasapicbot.model.LangCode
 import space.maxkonkin.nasapicbot.model.Nasa
+import space.maxkonkin.nasapicbot.model.ScheduleState
 import space.maxkonkin.nasapicbot.model.User
 import space.maxkonkin.nasapicbot.repository.NasaRowTableRepository
 import space.maxkonkin.nasapicbot.to.NasaTo
@@ -19,8 +20,8 @@ class NasaServiceTest {
     private val nasaRepository = mockk<NasaRowTableRepository>()
     private val translateService = mockk<TranslateService>()
 
-    private val enUser = User(1L, "user", false, LangCode.EN)
-    private val ruUser = User(2L, "user", false, LangCode.RU)
+    private val enUser = User(1L, "user", ScheduleState.NONE, LangCode.EN)
+    private val ruUser = User(2L, "user", ScheduleState.NONE, LangCode.RU)
 
     private val nasaTo = NasaTo(
         credit = null,

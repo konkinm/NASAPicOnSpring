@@ -2,8 +2,10 @@ package space.maxkonkin.nasapicbot
 
 import io.mockk.*
 import org.junit.jupiter.api.Test
+import kotlin.test.assertEquals
 import space.maxkonkin.nasapicbot.client.YandexCloudClient
 import space.maxkonkin.nasapicbot.model.LangCode
+import space.maxkonkin.nasapicbot.model.ScheduleState
 import space.maxkonkin.nasapicbot.model.Token
 import space.maxkonkin.nasapicbot.model.User
 import space.maxkonkin.nasapicbot.repository.UserRepository
@@ -15,7 +17,7 @@ class UserServiceTest {
     private val cloudClient = mockk<YandexCloudClient>()
     private val userService = UserService(repository, cloudClient)
 
-    private val testUser = User(123L, "testUser", false, LangCode.EN)
+    private val testUser = User(123L, "testUser", ScheduleState.NONE, LangCode.EN)
     private val token = Token("test-token", 3600L, "Bearer")
 
     // --- saveNew ---
@@ -39,71 +41,58 @@ class UserServiceTest {
         verify(exactly = 0) { repository.save(any()) }
     }
 
-    // --- updateSchedule ---
+    // --- toggleSchedule ---
 
     @Test
-    fun `updateSchedule does nothing when token is null`() {
-        userService.updateSchedule(testUser, null)
+    fun `toggleSchedule does nothing with cloud when token is null`() {
+        val result = userService.toggleSchedule(testUser, null)
 
-        verify(exactly = 0) { cloudClient.isTriggerCreated(any(), any()) }
+        assertEquals(ScheduleState.ACTIVE, result)
+        verify(exactly = 0) { cloudClient.createTrigger(any(), any()) }
         verify(exactly = 0) { repository.update(any()) }
     }
 
     @Test
-    fun `updateSchedule resumes existing trigger when isScheduled is true`() {
-        val scheduledUser = testUser.copy(isScheduled = true, triggerId = "trigger-1")
-        every { cloudClient.isTriggerCreated("trigger-1", "test-token") } returns true
-        every { cloudClient.resumeTrigger("trigger-1", "test-token") } returns true
-        every { repository.update(scheduledUser) } just Runs
+    fun `toggleSchedule NONE to ACTIVE creates trigger`() {
+        val noneUser = testUser.copy(scheduleState = ScheduleState.NONE, triggerId = null)
+        every { cloudClient.createTrigger("123", "test-token") } returns "new-trigger-id"
+        every { repository.update(noneUser.copy(scheduleState = ScheduleState.ACTIVE, triggerId = "new-trigger-id")) } just Runs
 
-        userService.updateSchedule(scheduledUser, token)
+        val result = userService.toggleSchedule(noneUser, token)
 
-        verify { cloudClient.resumeTrigger("trigger-1", "test-token") }
-        verify { repository.update(scheduledUser) }
+        assertEquals(ScheduleState.ACTIVE, result)
+        verify { cloudClient.createTrigger("123", "test-token") }
+        verify { repository.update(noneUser.copy(scheduleState = ScheduleState.ACTIVE, triggerId = "new-trigger-id")) }
         verify(exactly = 0) { cloudClient.pauseTrigger(any(), any()) }
-    }
-
-    @Test
-    fun `updateSchedule pauses existing trigger when isScheduled is false`() {
-        val unscheduledUser = testUser.copy(isScheduled = false, triggerId = "trigger-1")
-        every { cloudClient.isTriggerCreated("trigger-1", "test-token") } returns true
-        every { cloudClient.pauseTrigger("trigger-1", "test-token") } returns true
-        every { repository.update(unscheduledUser) } just Runs
-
-        userService.updateSchedule(unscheduledUser, token)
-
-        verify { cloudClient.pauseTrigger("trigger-1", "test-token") }
-        verify { repository.update(unscheduledUser) }
         verify(exactly = 0) { cloudClient.resumeTrigger(any(), any()) }
     }
 
     @Test
-    fun `updateSchedule creates trigger without pausing when isScheduled is true`() {
-        val scheduledUser = testUser.copy(isScheduled = true, triggerId = null)
-        every { cloudClient.isTriggerCreated(null, "test-token") } returns false
-        every { cloudClient.createTrigger("123", "test-token") } returns "new-trigger-id"
-        every { repository.update(scheduledUser.copy(triggerId = "new-trigger-id")) } just Runs
+    fun `toggleSchedule ACTIVE to PAUSED pauses existing trigger`() {
+        val activeUser = testUser.copy(scheduleState = ScheduleState.ACTIVE, triggerId = "trigger-1")
+        every { cloudClient.pauseTrigger("trigger-1", "test-token") } returns true
+        every { repository.update(activeUser.copy(scheduleState = ScheduleState.PAUSED)) } just Runs
 
-        userService.updateSchedule(scheduledUser, token)
+        val result = userService.toggleSchedule(activeUser, token)
 
-        verify { cloudClient.createTrigger("123", "test-token") }
-        verify { repository.update(scheduledUser.copy(triggerId = "new-trigger-id")) }
-        verify(exactly = 0) { cloudClient.pauseTrigger(any(), any()) }
+        assertEquals(ScheduleState.PAUSED, result)
+        verify { cloudClient.pauseTrigger("trigger-1", "test-token") }
+        verify { repository.update(activeUser.copy(scheduleState = ScheduleState.PAUSED)) }
+        verify(exactly = 0) { cloudClient.resumeTrigger(any(), any()) }
     }
 
     @Test
-    fun `updateSchedule creates and immediately pauses trigger when isScheduled is false`() {
-        val unscheduledUser = testUser.copy(isScheduled = false, triggerId = null)
-        every { cloudClient.isTriggerCreated(null, "test-token") } returns false
-        every { cloudClient.createTrigger("123", "test-token") } returns "new-trigger-id"
-        every { cloudClient.pauseTrigger("new-trigger-id", "test-token") } returns true
-        every { repository.update(unscheduledUser.copy(triggerId = "new-trigger-id")) } just Runs
+    fun `toggleSchedule PAUSED to ACTIVE resumes existing trigger`() {
+        val pausedUser = testUser.copy(scheduleState = ScheduleState.PAUSED, triggerId = "trigger-1")
+        every { cloudClient.resumeTrigger("trigger-1", "test-token") } returns true
+        every { repository.update(pausedUser.copy(scheduleState = ScheduleState.ACTIVE)) } just Runs
 
-        userService.updateSchedule(unscheduledUser, token)
+        val result = userService.toggleSchedule(pausedUser, token)
 
-        verify { cloudClient.createTrigger("123", "test-token") }
-        verify { cloudClient.pauseTrigger("new-trigger-id", "test-token") }
-        verify { repository.update(unscheduledUser.copy(triggerId = "new-trigger-id")) }
+        assertEquals(ScheduleState.ACTIVE, result)
+        verify { cloudClient.resumeTrigger("trigger-1", "test-token") }
+        verify { repository.update(pausedUser.copy(scheduleState = ScheduleState.ACTIVE)) }
+        verify(exactly = 0) { cloudClient.pauseTrigger(any(), any()) }
     }
 
     // --- delete ---
